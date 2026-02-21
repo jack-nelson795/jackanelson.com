@@ -221,6 +221,23 @@ a:hover{ text-decoration: none; }
   margin: 18px 0 16px;
 }
 
+/* De-duplicate navigation paths:
+   - Mobile: use the hero buttons, hide top-nav Work/Visualizations
+   - Desktop: use the top-nav, hide the hero Work/Visualizations buttons */
+@media (max-width: 780px){
+  .site-header .nav a[href="#work"],
+  .site-header .nav a[href="#visuals"]{
+    display: none;
+  }
+}
+
+@media (min-width: 781px){
+  .hero-cta a[href="#work"],
+  .hero-cta a[href="#visuals"]{
+    display: none;
+  }
+}
+
 .btn{
   display:inline-flex;
   align-items:center;
@@ -519,6 +536,19 @@ a:hover{ text-decoration: none; }
   background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
   box-shadow: var(--shadow-soft);
   padding: 16px;
+}
+
+/* Mobile-only: increase "frost" on text containers without changing desktop */
+@media (max-width: 780px){
+  .panel,
+  .card,
+  .contact-card,
+  .hero-card{
+    background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.075));
+    border-color: rgba(255,255,255,.20);
+    -webkit-backdrop-filter: blur(36px) saturate(1.16);
+    backdrop-filter: blur(36px) saturate(1.16);
+  }
 }
 
 .panel h3{ margin: 0 0 8px; letter-spacing: -.01em; }

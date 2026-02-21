@@ -160,12 +160,19 @@
     }
     if (prefersReduced) return;
 
+    var isMobile = false;
+    try {
+      isMobile = !!(window.matchMedia && window.matchMedia("(max-width: 780px)").matches);
+    } catch (e) {
+      isMobile = (window.innerWidth || 9999) <= 780;
+    }
+
     var host = document.getElementById("particles-js");
     if (!host) return;
 
     if (typeof window.particlesJS !== "function") return;
 
-    window.particlesJS("particles-js", {
+    var config = {
       particles: {
         number: { value: 260, density: { enable: true, value_area: 700 } },
         color: { value: "#ffffff" },
@@ -203,7 +210,17 @@
         }
       },
       retina_detect: true
-    });
+    };
+
+    if (isMobile) {
+      config.particles.number.value = 155;
+      config.particles.number.density.value_area = 1350;
+      config.particles.line_linked.distance = 125;
+      config.particles.line_linked.opacity = 0.32;
+      config.particles.line_linked.width = 1;
+    }
+
+    window.particlesJS("particles-js", config);
 
     installParticlesHoverGlow();
   }
