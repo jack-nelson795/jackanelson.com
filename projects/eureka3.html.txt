@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Eureka 3 — Jack Nelson</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+      <nav class="nav">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html#work">← Back</a>
+      </div>
+
+      <h1 class="page-title">Space Enterprise at Berkeley — Eureka 3 Propulsion Work</h1>
+      <p class="page-sub">
+        This content is taken only from your provided Resume PDF.
+      </p>
+
+      <div class="page-grid">
+        <section class="panel">
+          <h3>Contributions (from your Resume)</h3>
+          <ul>
+            <li>Engineered the quick-disconnect fill system.</li>
+            <li>Optimized bulkhead geometry.</li>
+            <li>Simulated IPA injector flow (CFD) for Eureka 3, a liquid bipropellant rocket targeting the Kármán line.</li>
+            <li>Collaborated with the simulations team to deliver validated propulsion subsystems.</li>
+            <li>The regeneratively cooled Inconel-718 engine achieved a record 11 kN thrust.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal"
+                  data-modal-src="../assets/prop_instrumented_front.png"
+                  data-modal-alt="Instrumented setup (front)"
+                  data-modal-caption="Instrumented setup (front) — click to expand">
+            <img src="../assets/prop_instrumented_front.png" alt="Instrumented setup (front)" loading="lazy" />
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <aside class="panel">
+          <h3>Key facts (from your Resume)</h3>
+          <div class="kv">
+            <div class="k">Team</div><div class="v">Space Enterprise at Berkeley</div>
+            <div class="k">Vehicle</div><div class="v">Eureka 3 (liquid bipropellant rocket)</div>
+            <div class="k">CFD</div><div class="v">IPA injector flow simulation</div>
+            <div class="k">Engine</div><div class="v">Regeneratively cooled Inconel-718</div>
+            <div class="k">Result</div><div class="v">Record 11 kN thrust (as stated)</div>
+          </div>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal"
+                  data-modal-src="../assets/prop_teststand_side.png"
+                  data-modal-alt="Test stand side view"
+                  data-modal-caption="Test stand (side) — click to expand">
+            <img src="../assets/prop_teststand_side.png" alt="Test stand side view" loading="lazy" />
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- LIGHTBOX MODAL -->
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

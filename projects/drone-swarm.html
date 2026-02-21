@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Drone Swarm Digital Twin — Jack Nelson</title>
+  <meta name="description" content="Project details sourced from PDFs only." />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="particles-js" aria-hidden="true"></div>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html#work">← Back to Selected Work</a>
+      </div>
+
+      <h1 class="page-title">Drone Swarm Digital Twin</h1>
+      <p class="page-sub">This page must contain only text explicitly present in the provided PDFs. Any missing detail is marked.</p>
+
+      <div class="page-grid">
+        <section class="panel" aria-label="Project details">
+          <h3>Overview</h3>
+          <p>I developed a comprehensive computational framework for autonomous multi-agent systems, combining a modular
+optimization toolbox with a biologically-inspired drone swarm simulation. The system uses genetic algorithms to evolve
+decentralized control strategies that produce emergent collective behavior, demonstrating how simple local interaction
+rules can generate complex mission-level performance without centralized coordination.</p>
+
+          <p>The toolbox supports constraint handling, elitism preservation, and parallel fitness evaluation across multiple CPU cores.
+It includes visualization utilities for convergence analysis, population diversity tracking, and real-time optimization
+metrics. The architecture is designed for extensibility, new physics engines, cost functions, and constraint handlers
+integrate through well-defined abstract base classes, making it suitable for applications ranging from trajectory
+optimization to structural design.</p>
+
+          <p>The mission ends only when all targets are
+captured or all drones are destroyed; surviving agents then autonomously return to base using the same control laws,
+demonstrating genuine emergent homing behavior without hard-coded return paths.</p>
+
+          <h3 style="margin-top:16px">What I Built / Did</h3>
+          <ul>
+            <li>I created an optimization toolbox that provides a reusable infrastructure for derivative-free optimization problems. At its
+core is a flexible genetic algorithm implementation with customizable crossover operators (including Zohdi's phi-psi
+blending for continuous design spaces), tournament and roulette selection mechanisms, and adaptive mutation strategies.</li>
+            <li>My emergent swarm control project applies this toolbox to the cooperative target acquisition problem. Instead of
+optimizing fixed waypoint trajectories, the system evolves control law weights that govern how each drone responds to its
+local environment.</li>
+            <li>Each agent computes its movement force as a weighted sum of four behavioral components: attraction
+to the nearest unvisited target, repulsion from obstacles, separation from neighboring drones, and cohesion with the swarm
+centroid.</li>
+            <li>The simulation implements realistic physics with configurable timesteps, 3D obstacle fields, and multi-target
+environments.</li>
+            <li>Drones sense their surroundings in real time, identifying closest targets via vectorized distance calculations,
+detecting obstacles within collision radii using spatial indexing, and maintaining awareness of nearby swarm members for
+separation and cohesion forces.</li>
+            <li>Collision detection runs at every timestep after an initial safe-zone period near the spawn
+base, with exact intersection criteria for obstacle and drone-drone impacts.</li>
+            <li>To achieve computational efficiency at scale, the fitness evaluation is parallelized across all available CPU cores.</li>
+            <li>Early generations rely on a fast heuristic cost function (rewarding obstacle avoidance and
+separation while penalizing cohesion and clustering) to prune the design space; later generations validate top candidates
+through full physics-based simulation.</li>
+            <li>Visualization is handled through a custom 3D animation pipeline built on Matplotlib's `FuncAnimation` framework.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/DroneAni.gif"
+                  data-modal-alt="Drone swarm animation"
+                  data-modal-caption="Drone swarm animation">
+            <img src="../assets/img/DroneAni.gif" alt="Drone swarm animation" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: DroneAni.gif</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <aside class="panel" aria-label="Tools and outputs">
+          <h3>Tools</h3>
+          <ul>
+            <li>Genetic algorithms</li>
+            <li>Tournament and roulette selection mechanisms</li>
+            <li>Adaptive mutation strategies</li>
+            <li>Parallel fitness evaluation across multiple CPU cores</li>
+            <li>Matplotlib's `FuncAnimation` framework</li>
+            <li>FFmpeg-encoded GIF files</li>
+          </ul>
+
+          <h3 style="margin-top:16px">Results / Outputs</h3>
+          <ul>
+            <li>The control law optimization successfully produces diverse emergent strategies.</li>
+            <li>The system demonstrates genuine multi-agent
+learning: drones autonomously discover role specialization, with some agents acting as scouts while others exploit cleared
+paths, all without explicit programming of these tactics.</li>
+            <li>The project demonstrates not just
+a working swarm optimizer, but a complete framework for studying emergent behavior in multi-agent systems.</li>
+            <li>All
+results are reproducible via seed control, critical for debugging and scientific validation.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/control_analysis.png"
+                  data-modal-alt="Control analysis graphs"
+                  data-modal-caption="Control analysis graphs">
+            <img src="../assets/img/control_analysis.png" alt="Control analysis graphs" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: control_analysis.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../particles.js-master/particles.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

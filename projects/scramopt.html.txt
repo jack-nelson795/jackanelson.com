@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ScramOpt — Jack Nelson</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+      <nav class="nav">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html#work">← Back</a>
+      </div>
+
+      <h1 class="page-title">Scram Jet Optimization Project (ScramOpt)</h1>
+      <p class="page-sub">
+        This page is assembled only from the text in your provided PDFs (Resume + Engineering Projects).
+      </p>
+
+      <div class="page-grid">
+        <section class="panel">
+          <h3>What you built (from your PDFs)</h3>
+          <ul>
+            <li>Developed an ML surrogate model using Bayesian Optimization, Gaussian Process Regression, and Latin Hypercube Sampling.</li>
+            <li>Designed to iterate upon and optimize JAXA’s M12-02 hypersonic test bench.</li>
+            <li>Built a fully automated, headless optimization pipeline that generates scramjet geometries in FreeCAD, simulates them in SU2, and trains a surrogate model to predict flow outcomes.</li>
+            <li>The model iteratively learns by comparing predictions to CFD results, enabling rapid design space exploration by replacing costly simulations with learned approximations and evaluating only top-performing designs per generation.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+
+          <button class="media-tile js-open-modal"
+                  data-modal-src="../assets/hostile_drone_incursion.png"
+                  data-modal-alt="Visualization"
+                  data-modal-caption="Visualization (click to expand)">
+            <img src="../assets/hostile_drone_incursion.png" alt="Visualization" loading="lazy" />
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <aside class="panel">
+          <h3>Key facts (from your PDFs)</h3>
+          <div class="kv">
+            <div class="k">Methods</div><div class="v">Bayesian Optimization, GPR, Latin Hypercube Sampling</div>
+            <div class="k">Geometry</div><div class="v">FreeCAD (parametric generation)</div>
+            <div class="k">CFD</div><div class="v">SU2</div>
+            <div class="k">Pipeline</div><div class="v">Automated, headless workflow</div>
+            <div class="k">Goal</div><div class="v">Rapid design space exploration</div>
+          </div>
+
+          <div style="height:12px"></div>
+          <p style="margin:0;color:rgba(255,255,255,.72)">
+            (If you want, we can add links to your repo and a short “how to run” section—only if you provide the URL or include it in your PDFs.)
+          </p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- LIGHTBOX MODAL -->
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

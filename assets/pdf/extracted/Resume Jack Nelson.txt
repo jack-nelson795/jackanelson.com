@@ -1,0 +1,80 @@
+Jack Nelson 
+jack_nelson@berkeley.edu | Berkeley, CA | www.linkedin.com/in/jack-nelson795 | 559-326-9298 
+ 
+EDUCATION 
+University of California, Berkeley  ​
+May 2028 
+Mechanical Engineering​
+  
+Relevant Coursework: Calculus I-III, Differential Equations, Linear Algebra, Physics I-II, Python/MATLAB, Computer 
+Aided Design, Solid Mechanics, Manufacturing and Design Communication, Modeling, Simulation, and Digital-Twins of 
+Drone Swarm Based Systems, Introduction to the Design of Radiation Detectors 
+WORK EXPERIENCE 
+Safran​
+Gainesville, TX 
+Tooling Design Engineering Intern​
+Summer 2025 
+●​
+Designed and delivered 27+ complex production tools, including jigs, fixtures, and vacuum form tooling, using 
+CATIA V5, with 93% of tooling designs passing first article inspection without modification 
+●​
+Created technical drawings for CNC/manual machining; performed tolerance stackups and interference checks to 
+ensure fit, repeatability, and manufacturability with tolerances as low as ±0.001” 
+●​
+One project of note is the redesign of a multi-operation Schmidt Press process into a single-operation clamshell jig 
+for a one-way clutch assembly, eliminating two tools and consolidating three steps into one 
+●​
+Applied design-for-manufacturing principles across every design to reduce machining downtime 
+●​
+Supported rapid prototyping and short-run production, responding to evolving production needs 
+●​
+Co-led development of a UR20-based lights-out cobot tending system for a dual-gantry 5-axis DMS Glacier5 CNC 
+mill using vision-based part detection, a 7th axis, and custom vacuum end-of-arm tooling 
+●​
+Projected 6x throughput and 2-year ROI, presented system architecture to CEO and executive leadership biweekly 
+Total Concept Manufacturing​
+Fresno, CA 
+CNC Mill and CNC Lathe Operator​
+Summer 2023 
+●​
+Operated and maintained CNC lathe and mill machines, producing over 500 precision parts daily 
+●​
+Programmed and set up CNC machines for optimal performance, ensuring consistent accuracy/quality 
+●​
+Applied precise machining techniques to achieve tight tolerances and conducted quality control checks to verify part 
+conformity, meeting high-quality standards for fasteners, aerospace, and automotive components  
+●​
+Reduced machine downtime by efficiently troubleshooting mechanical issues, performing preventative maintenance, 
+and collaborating with the engineering team to improve machining processes and optimize production efficiency 
+LEADERSHIP & ENGINEERING INVOLVEMENT 
+Space Enterprise at Berkeley​
+Berkeley, CA 
+Student Propulsion Engineer​
+August 2024 – Current 
+●​
+Engineered the quick-disconnect fill system, optimized bulkhead geometry, and simulated IPA injector flow CFD for 
+Eureka 3, a liquid bipropellant rocket targeting the Kármán line. Collaborated with the simulations team to deliver 
+validated propulsion subsystems. The regeneratively cooled Inconel-718 engine achieved a record 11 kN thrust. 
+PERSONAL PROJECTS  
+Regeneratively Cooled, IR-Suppressed, Additively Manufactured, Monolithic Micro Gas Turbine (Patent Pending) 
+●​
+Designed, simulated, and manufactured a fully 3D-printed polymer micro gas turbine with regenerative fuel cooling, 
+directional IR suppression, reduced part count through a monolithic structure, and a prototype cost under $600 
+●​
+Conducted materials analysis on thermoset resins and ceramic composites, iterating through multiple designs 
+●​
+Engineered regenerative flow paths and combustor geometry for enhanced heat resistance and structural durability 
+Scram Jet Optimization Project (ScramOpt, Open-Source Tool) 
+●​
+Developed an ML surrogate model using Bayesian Optimization, Gaussian Process Regression, and Latin 
+Hypercube Sampling, designed to iterate upon and optimize JAXA’s M12-02 hypersonic test bench 
+●​
+Fully automated, headless optimization pipeline that parametrically generates scramjet geometries in FreeCAD, 
+simulates them in SU2, and trains a surrogate model to predict flow outcomes; the model iteratively learns by 
+comparing predictions to real CFD results, enabling rapid design space exploration by replacing costly simulations 
+with learned approximations and evaluating only the top-performing designs per generation 
+SKILLS 
+CATIA, SolidWorks, Fusion 360, FreeCAD, ANSYS, SU2, MATLAB, Python, C++, Excel, Git, Docker; CFD, FEA, DFM, 
+CNC Machining, Propulsion Systems, Additive Manufacturing, Industrial Automation, Materials Science, Rapid Prototyping, 
+Microcontroller Systems, Bayesian Optimization, ML, RL, Headless Workflow Automation; Feedback-Driven Iteration 
+ 

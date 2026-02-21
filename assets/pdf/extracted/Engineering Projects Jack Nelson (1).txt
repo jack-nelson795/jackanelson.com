@@ -1,0 +1,121 @@
+Jack Nelson Engineering Projects 
+Regeneratively Cooled Additively Manufactured Micro Gas Turbine Engine 
+I am refining a fully 3D-printed micro gas turbine engine with advanced active cooling made from high-heat deflection 
+thermoset resin. The engine is built to be low-cost, IR-suppressed, fast to produce, and with a significantly reduced part 
+count using advanced additive manufacturing. Over the past year I have worked towards designing a 100 N class micro 
+gas turbine engine built as a monolithic polymer structure with regenerative cooling and integrated fuel injection. The 
+static assembly, including the outer casing, diffuser, combustor, and shaft tunnel with radial injectors, is printed in 
+high-heat-deflection-temperature SLA resin, with only the rotating assembly (shaft, turbine wheel) and nozzle guide vanes 
+metallic. Conventional microturbines rely on sheet metal forming, CNC-machined housings, and brazed fuel systems; this 
+design eliminates all of that, showing that a flight-scale jet engine can be built with nothing more than an SLA printer and 
+off-the-shelf parts. A provisional patent has been filed, hot-fire tests are underway, and SBIR funding is being pursued. 
+Regarding the regenerative cooling, fuel enters through two inlets on the front face, fills an annular distributor ring with 
+multiple metering orifices, and flows through axial channels down the casing, up the combustor wall, and back down the 
+shaft tunnel. At the tunnel exit, the fuel passes through radial injectors printed into the wall, delivering it into the 
+combustor. This eliminates brass tubing and brazing entirely, since the fuel system is embedded in the printed casing. The 
+channels are tuned so that fuel remains liquid until injection, ensuring pre-heating of the fuel, and targeting phase-change 
+cooling at the injection points along the shaft tunnel. Regenerative cooling is what makes a polymer engine feasible, 
+preventing the casing from ever reaching its heat deflection temperature even though the surrounding gas path operates 
+orders of magnitude hotter. Beyond survivability, it expands the design space for micro gas turbines by enabling novel 
+injection strategies, such as radial tunnel injection, that would be impractical in traditional metal engines. 
+The combustor is a ground-up design, verified through CFD and airflow simulations. A central tradeoff in the design is the 
+size and placement of dilution and liner holes; smaller holes force more air through each jet, improving penetration and 
+flame stabilization but reducing overall wall cooling. Larger holes admit more cooling flow, but at the cost of residence 
+time and combustion efficiency. We iterated through multiple different designs to balance cooling with stability, creating a 
+combustor tailored to a polymer casing while still achieving the target thrust class. Another key research direction for this 
+engine has been its thermal signature management. Traditional microturbines radiate strongly from hot metal casings. In 
+this design, the fuel-cooled polymer body blocks line-of-sight to the combustor and hot hardware, so the outer surface 
+radiates very little energy. Instead, emissions are biased rearward into the plume. This plume-only IR signature is valuable 
+for seeker calibration and sensor testing, because it replicates what real aircraft engines present to a detector, hot exhaust 
+and a comparatively cold body, rather than the unrealistic signature standard micro gas turbines of this scale emit. 
+To enhance the IR suppression effect, I developed experimental nozzle/sheath combinations consisting of dual-wall 
+nozzles with external sheaths that block direct line-of-sight and entrain ambient air into the annulus and center-body spike 
+nozzles that reshape the exhaust jet and damp acoustic modes. Test variants experimented with different convergence 
+angles, center-body lengths, and sheath offsets, exploiting the Coanda effect, where the high-speed exhaust flow entrains 
+ambient air. This creates a passive insulating layer of cool air around the plume, reducing IR from the nozzle and sheath 
+without active systems. The engine design has been validated through CFD of the annulus and channels, transient heat 
+transfer analysis of the casing, and FEA of stresses under combined pressure and thermal expansion. Cold-flow tests 
+confirmed even distribution through the annulus and matched predicted pressure drops. For hot-fire testing, I designed a 
+dedicated bench with fuel and ignition systems, a tachometer to measure rotating assembly speed, thermocouples for 
+recording exhaust gas temperature (EGT), turbine inlet temperature (TIT), a thrust load cell, and synchronized IR video. 
+Preliminary results confirm that regenerative flow holds casing temperatures within material limits, and that IR emission 
+1 
+
+ 
+is strongly plume-biased. At a prototype cost of ~$600, this is the first demonstration of a polymer jet engine surviving 
+operation through regenerative cooling. It consolidates the casing, diffuser, combustor, shaft tunnel, and injectors into one 
+printed part, eliminating brazing, sheet metal forming, and complex CNC machining. 
+Scramjet Optimization Project 
+Expanding from my work on gas turbines, I am also working with my little brother on a scramjet optimization project 
+based on JAXA’s M12-02 engine. We use Bayesian optimization with Gaussian process regression and Latin hypercube 
+sampling to explore geometry and flow conditions, optimizing for thrust while considering thermal limits and avoiding 
+inlet unstart conditions. The workflow I designed is fully automated and headless. Using FreeCAD macros, the pipeline 
+parametrically generates new scramjet geometries, varying key features such as inlet contraction, combustor length, fuel 
+injection location and rate, and nozzle expansion. Each geometry is then meshed and simulated in SU2, where we run 
+compressible Navier–Stokes solvers with turbulence and combustion models tuned to Mach 5.5 freestream conditions. 
+The CFD results feed into a surrogate model built with Gaussian Process Regression, seeded with Latin Hypercube 
+Sampling for initial coverage. A Bayesian Optimization loop then guides the exploration, training the surrogate to predict 
+flow outcomes and only sending the most promising candidates back to SU2 for verification. To accelerate convergence, I 
+also incorporate adjoint-based solvers to extract gradient information, and the pipeline automatically recovers from failed 
+simulations so it can run continuously on HPC resources. We have scheduled large-scale runs on the Perlmutter 
+supercomputer at Lawrence Berkeley National Laboratory, where I will deploy the full optimization framework. 
+Space Enterprise at Berkeley 
+In addition to my personal research projects, I have also gained experience as a student propulsion engineer on the Space 
+Enterprise at Berkeley team, where I contributed to the Eureka 3 rocket, a bipropellant vehicle targeting the Kármán line. I 
+worked on several propulsion subsystems, engineering the quick-disconnect fill system to streamline propellant filling, 
+optimized bulkhead geometry to improve structural performance under pressurization, and performed injector CFD 
+simulations for IPA propellant, collaborating with the simulations team to validate results. These systems directly 
+contribute to the success of Heavybulb, our regeneratively cooled Inconel-718 design that achieved 11 kN thrust in 
+testing. 
+ Emergent Swarm Control & ME144 Optimization Toolbox 
+I developed a comprehensive computational framework for autonomous multi-agent systems, combining a modular 
+optimization toolbox with a biologically-inspired drone swarm simulation. The system uses genetic algorithms to evolve 
+decentralized control strategies that produce emergent collective behavior, demonstrating how simple local interaction 
+rules can generate complex mission-level performance without centralized coordination. 
+I created an optimization toolbox that provides a reusable infrastructure for derivative-free optimization problems. At its 
+core is a flexible genetic algorithm implementation with customizable crossover operators (including Zohdi's phi-psi 
+blending for continuous design spaces), tournament and roulette selection mechanisms, and adaptive mutation strategies. 
+The toolbox supports constraint handling, elitism preservation, and parallel fitness evaluation across multiple CPU cores. 
+It includes visualization utilities for convergence analysis, population diversity tracking, and real-time optimization 
+metrics. The architecture is designed for extensibility, new physics engines, cost functions, and constraint handlers 
+2 
+
+ 
+integrate through well-defined abstract base classes, making it suitable for applications ranging from trajectory 
+optimization to structural design. 
+My emergent swarm control project applies this toolbox to the cooperative target acquisition problem. Instead of 
+optimizing fixed waypoint trajectories, the system evolves control law weights that govern how each drone responds to its 
+local environment. Each agent computes its movement force as a weighted sum of four behavioral components: attraction 
+to the nearest unvisited target, repulsion from obstacles, separation from neighboring drones, and cohesion with the swarm 
+centroid. The genetic algorithm optimizes these four weights per drone, discovering decentralized strategies that balance 
+exploration efficiency, collision avoidance, and coordinated coverage. 
+The simulation implements realistic physics with configurable timesteps, 3D obstacle fields, and multi-target 
+environments. Drones sense their surroundings in real time, identifying closest targets via vectorized distance calculations, 
+detecting obstacles within collision radii using spatial indexing, and maintaining awareness of nearby swarm members for 
+separation and cohesion forces. Collision detection runs at every timestep after an initial safe-zone period near the spawn 
+base, with exact intersection criteria for obstacle and drone-drone impacts. The mission ends only when all targets are 
+captured or all drones are destroyed; surviving agents then autonomously return to base using the same control laws, 
+demonstrating genuine emergent homing behavior without hard-coded return paths. 
+To achieve computational efficiency at scale, the fitness evaluation is parallelized across all available CPU cores. Each 
+candidate weight vector spawns an independent simulation instance, allowing the genetic algorithm to evaluate entire 
+populations simultaneously. Early generations rely on a fast heuristic cost function (rewarding obstacle avoidance and 
+separation while penalizing cohesion and clustering) to prune the design space; later generations validate top candidates 
+through full physics-based simulation. This hybrid strategy reduces wall-clock time by an order of magnitude compared to 
+naive sequential evaluation. 
+Visualization is handled through a custom 3D animation pipeline built on Matplotlib's `FuncAnimation` framework. The 
+renderer draws obstacles and targets as solid cubes on the ground plane, tracks drone positions with color-coded markers, 
+and dynamically hides captured targets. Frame interpolation is disabled to preserve the stepwise physics fidelity, and the 
+output is exported as multi-threaded FFmpeg-encoded GIF files. The animation reproduces simulation behavior, including 
+the return-to-base phase that triggers once all targets are secured and terminates the animation when survivors converge 
+within a 10-unit radius of the home position. 
+The control law optimization successfully produces diverse emergent strategies. Depending on the evolved weights, 
+swarms exhibit behaviors ranging from aggressive coordinated strikes (high target attraction, low obstacle avoidance) to 
+cautious dispersed exploration (high separation, moderate cohesion). The system demonstrates genuine multi-agent 
+learning: drones autonomously discover role specialization, with some agents acting as scouts while others exploit cleared 
+paths, all without explicit programming of these tactics. This aligns directly with Zohdi's research on decentralized swarm 
+coordination and phi-psi crossover operators for continuous parameter spaces, showing how evolutionary computation can 
+discover robust control strategies in high-dimensional, nonlinear design problems where gradient-based methods fail. All 
+results are reproducible via seed control, critical for debugging and scientific validation. The project demonstrates not just 
+a working swarm optimizer, but a complete framework for studying emergent behavior in multi-agent systems. 
+ 
+3 

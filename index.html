@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jack Nelson — Engineering</title>
+  <meta name="description" content="Jack Nelson — engineering portfolio. Selected work, technical visuals, and contact." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div id="particles-js" aria-hidden="true"></div>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#work">Work</a>
+        <a href="#visuals">Visualizations</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Engineering Portfolio</p>
+          <h1 class="hero-title">Jack Nelson Engineering Portfolio.</h1>
+          <p class="hero-subtitle">Project pages contain only text explicitly present in the provided PDFs.</p>
+
+          <div class="hero-cta">
+            <a class="btn primary" href="#work">View selected work</a>
+            <a class="btn ghost" href="#visuals">See visuals</a>
+            <a class="btn ghost" href="gallery.html">Gallery</a>
+            <a class="btn ghost" href="assets/pdf/Resume%20Jack%20Nelson.pdf" target="_blank" rel="noopener" aria-label="Preview resume (opens in new tab)">Preview résumé</a>
+            <a class="btn ghost" href="assets/pdf/Jack_Nelson_Engineering_Portfolio.pdf" target="_blank" rel="noopener" aria-label="Preview engineering portfolio PDF (opens in new tab)">Preview portfolio PDF</a>
+          </div>
+
+          <div class="hero-tags" aria-label="Core areas">
+            <span class="tag">Propulsion Systems</span>
+            <span class="tag">CFD</span>
+            <span class="tag">Optimization</span>
+            <span class="tag">Manufacturing</span>
+            <span class="tag">Digital Twins</span>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="hero-card-top">
+            <div class="pill">Featured Visual</div>
+            <div class="pill muted">Click to expand</div>
+          </div>
+
+          <button class="media-tile js-open-modal"
+                  type="button"
+                  data-modal-src="assets/img/DroneAni.gif"
+                  data-modal-alt="Drone swarm visualization animation"
+                  data-modal-caption="Drone swarm visualization (click to expand)">
+            <img src="assets/img/DroneAni.gif" alt="Drone swarm visualization animation" loading="eager" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: DroneAni.gif</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <p class="hero-card-note">Tip: visuals expand into an artistic lightbox (~75% viewport), with an ✕ close control.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="work" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Selected work</h2>
+          <p>Each project links to a dedicated page, and project text is sourced from the provided PDFs.</p>
+        </div>
+
+        <div class="cards-grid">
+          <a class="card" href="projects/micro-turbine.html">
+            <div class="card-top">
+              <span class="chip">Project</span>
+              <span class="chip muted">Details from PDFs only</span>
+            </div>
+            <h3>Micro Gas Turbine</h3>
+            <p>I am developing a regeneratively cooled, additively manufactured 100 N-class micro gas turbine engine built as a
+largely monolithic polymer structure. The diffuser, combustor, shaft tunnel, and fuel injection system are integrated
+into a single SLA-printed high-heat-deflection thermoset casing, with only the rotating assembly and nozzle guide
+vanes metallic.</p>
+            <div class="card-foot">
+              <span class="linkish">Open project →</span>
+              <span class="mini">projects/micro-turbine.html</span>
+            </div>
+          </a>
+
+          <a class="card" href="projects/scramopt.html">
+            <div class="card-top">
+              <span class="chip">Project</span>
+              <span class="chip muted">Details from PDFs only</span>
+            </div>
+            <h3>ScramOpt</h3>
+            <p>In parallel, I developed ScramOpt, a fully automated CFD and Bayesian optimization framework for hypersonic
+scramjet geometry exploration based on JAXA’s M12-02 configuration. The pipeline parametrically generates scramjet
+geometries in FreeCAD, meshes and simulates compressible Navier–Stokes flow in SU2 at Mach 5.5 freestream
+conditions, and trains a Gaussian Process Regression surrogate model seeded with Latin Hypercube Sampling to ensure
+broad design-space coverage.</p>
+            <div class="card-foot">
+              <span class="linkish">Open project →</span>
+              <span class="mini">projects/scramopt.html</span>
+            </div>
+          </a>
+
+          <a class="card" href="projects/eureka3.html">
+            <div class="card-top">
+              <span class="chip">Project</span>
+              <span class="chip muted">Details from PDFs only</span>
+            </div>
+            <h3>Eureka 3</h3>
+            <p>As a Student Propulsion Engineer on Space Enterprise at Berkeley’s Eureka 3 bipropellant rocket team, I engineered
+the quick-disconnect fill system to streamline propellant loading operations, optimized bulkhead geometry for structural
+performance under pressurization, and performed IPA injector CFD in collaboration with the simulations team to
+support propulsion subsystem validation. The regeneratively cooled Inconel-718 engine achieved 11 kN thrust in
+testing.</p>
+            <div class="card-foot">
+              <span class="linkish">Open project →</span>
+              <span class="mini">projects/eureka3.html</span>
+            </div>
+          </a>
+
+          <a class="card" href="projects/drone-swarm.html">
+            <div class="card-top">
+              <span class="chip">Project</span>
+              <span class="chip muted">Details from PDFs only</span>
+            </div>
+            <h3>Drone Swarm Digital Twin</h3>
+            <p>Beyond propulsion, I developed a modular optimization toolbox and emergent multi-agent swarm simulation framework
+for decentralized control problems. Using genetic algorithms with customizable crossover and mutation strategies,
+the system evolves local control laws governing attraction, separation, cohesion, and obstacle avoidance forces
+for autonomous agents operating in 3D environments.</p>
+            <div class="card-foot">
+              <span class="linkish">Open project →</span>
+              <span class="mini">projects/drone-swarm.html</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="visuals" class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Visualizations</h2>
+          <p>Click any image to expand. Close with ✕, click outside, or press Esc.</p>
+        </div>
+
+        <div class="masonry" aria-label="Visualization gallery">
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="assets/img/DroneAni.gif"
+                  data-modal-alt="Drone swarm animation"
+                  data-modal-caption="Drone swarm animation">
+            <img src="assets/img/DroneAni.gif" alt="Drone swarm animation" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: DroneAni.gif</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="assets/img/prop_components.png"
+                  data-modal-alt="Propulsion components layout"
+                  data-modal-caption="prop_components.png">
+            <img src="assets/img/prop_components.png" alt="Propulsion components layout" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_components.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="assets/img/prop_instrumented_front.png"
+                  data-modal-alt="Instrumented setup front view"
+                  data-modal-caption="prop_instrumented_front.png">
+            <img src="assets/img/prop_instrumented_front.png" alt="Instrumented setup front view" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_instrumented_front.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="assets/img/prop_teststand_side.png"
+                  data-modal-alt="Test stand side view"
+                  data-modal-caption="prop_teststand_side.png">
+            <img src="assets/img/prop_teststand_side.png" alt="Test stand side view" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_teststand_side.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="assets/img/ga_phi_psi_Pib_best_mean.png"
+                  data-modal-alt="Optimization visualization"
+                  data-modal-caption="Optimization visualization">
+            <img src="assets/img/ga_phi_psi_Pib_best_mean.png" alt="Optimization visualization" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: ga_phi_psi_Pib_best_mean.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="assets/img/prop_hotfire.png"
+                  data-modal-alt="Propulsion test image"
+                  data-modal-caption="prop_hotfire.png">
+            <img src="assets/img/prop_hotfire.png" alt="Propulsion test image" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_hotfire.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <button class="media-tile media-control js-open-modal" type="button"
+                  data-modal-src="assets/img/control_analysis.png"
+                  data-modal-alt="Control analysis graphs"
+                  data-modal-caption="Control analysis graphs">
+            <img src="assets/img/control_analysis.png" alt="Control analysis graphs" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: control_analysis.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section section-contact">
+      <div class="container contact-grid">
+        <div>
+          <h2>Contact</h2>
+          <p class="contact-sub">Email is the fastest way to reach me.</p>
+        </div>
+
+        <div class="contact-card" aria-label="Contact links">
+          <div class="contact-row">
+            <div class="contact-label">Email</div>
+            <a class="contact-link" href="mailto:jack_nelson@berkeley.edu">jack_nelson@berkeley.edu</a>
+          </div>
+          <div class="contact-row">
+            <div class="contact-label">LinkedIn</div>
+            <a class="contact-link" href="https://www.linkedin.com/in/jack-nelson795/" target="_blank" rel="noreferrer">linkedin.com/in/jack-nelson795</a>
+          </div>
+          <div class="contact-row">
+            <div class="contact-label">Phone</div>
+            <a class="contact-link" href="tel:+15593269298">559-326-9298</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim">Built as a clean static site (no WordPress required).</span>
+    </div>
+  </footer>
+
+  <script src="particles.js-master/particles.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

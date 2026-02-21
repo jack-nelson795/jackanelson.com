@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Eureka 3 — Jack Nelson</title>
+  <meta name="description" content="Project details sourced from PDFs only." />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="particles-js" aria-hidden="true"></div>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html#work">← Back to Selected Work</a>
+      </div>
+
+      <h1 class="page-title">Eureka 3</h1>
+      <p class="page-sub">This page must contain only text explicitly present in the provided PDFs. Any missing detail is marked.</p>
+
+      <div class="page-grid">
+        <section class="panel" aria-label="Project details">
+          <h3>Overview</h3>
+          <p>In addition to my personal research projects, I have also gained experience as a student propulsion engineer on the Space
+Enterprise at Berkeley team, where I contributed to the Eureka 3 rocket, a bipropellant vehicle targeting the Kármán line.</p>
+
+          <h3 style="margin-top:16px">What I Built / Did</h3>
+          <ul>
+            <li>I
+worked on several propulsion subsystems, engineering the quick-disconnect fill system to streamline propellant filling,</li>
+            <li>Optimized bulkhead geometry to improve structural performance under pressurization, and performed injector CFD
+simulations for IPA propellant, collaborating with the simulations team to validate results.</li>
+            <li>These systems directly
+contribute to the success of Heavybulb, our regeneratively cooled Inconel-718 design that achieved 11 kN thrust in
+testing.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/prop_instrumented_front.png"
+                  data-modal-alt="Instrumented setup front view"
+                  data-modal-caption="prop_instrumented_front.png">
+            <img src="../assets/img/prop_instrumented_front.png" alt="Instrumented setup front view" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_instrumented_front.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <aside class="panel" aria-label="Tools and outputs">
+          <h3>Tools</h3>
+          <ul>
+            <li>Injector CFD
+simulations for IPA propellant</li>
+          </ul>
+
+          <h3 style="margin-top:16px">Results / Outputs</h3>
+          <ul>
+            <li>Heavybulb, our regeneratively cooled Inconel-718 design that achieved 11 kN thrust in
+testing.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/prop_teststand_side.png"
+                  data-modal-alt="Test stand side view"
+                  data-modal-caption="prop_teststand_side.png">
+            <img src="../assets/img/prop_teststand_side.png" alt="Test stand side view" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_teststand_side.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/prop_hotfire.png"
+                  data-modal-alt="Propulsion test image"
+                  data-modal-caption="prop_hotfire.png">
+            <img src="../assets/img/prop_hotfire.png" alt="Propulsion test image" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_hotfire.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/heavybulb_24x36.png"
+                  data-modal-alt="Heavybulb engine"
+                  data-modal-caption="heavybulb_24x36.png">
+            <img src="../assets/img/heavybulb_24x36.png" alt="Heavybulb engine" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: heavybulb_24x36.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../particles.js-master/particles.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

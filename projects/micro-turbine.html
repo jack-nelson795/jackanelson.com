@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Micro Gas Turbine — Jack Nelson</title>
+  <meta name="description" content="Project details sourced from PDFs only." />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="particles-js" aria-hidden="true"></div>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html#work">← Back to Selected Work</a>
+      </div>
+
+      <h1 class="page-title">Micro Gas Turbine</h1>
+      <p class="page-sub">This page must contain only text explicitly present in the provided PDFs. Any missing detail is marked.</p>
+
+      <div class="page-grid">
+        <section class="panel" aria-label="Project details">
+          <h3>Overview</h3>
+          <p>I am refining a fully 3D-printed micro gas turbine engine with advanced active cooling made from high-heat deflection
+thermoset resin. The engine is built to be low-cost, IR-suppressed, fast to produce, and with a significantly reduced part
+count using advanced additive manufacturing. Over the past year I have worked towards designing a 100 N class micro
+gas turbine engine built as a monolithic polymer structure with regenerative cooling and integrated fuel injection. The
+static assembly, including the outer casing, diffuser, combustor, and shaft tunnel with radial injectors, is printed in
+high-heat-deflection-temperature SLA resin, with only the rotating assembly (shaft, turbine wheel) and nozzle guide vanes
+metallic.</p>
+
+          <p>Conventional microturbines rely on sheet metal forming, CNC-machined housings, and brazed fuel systems; this
+design eliminates all of that, showing that a flight-scale jet engine can be built with nothing more than an SLA printer and
+off-the-shelf parts. A provisional patent has been filed, hot-fire tests are underway, and SBIR funding is being pursued.</p>
+
+          <p>Regarding the regenerative cooling, fuel enters through two inlets on the front face, fills an annular distributor ring with
+multiple metering orifices, and flows through axial channels down the casing, up the combustor wall, and back down the
+shaft tunnel. At the tunnel exit, the fuel passes through radial injectors printed into the wall, delivering it into the
+combustor. This eliminates brass tubing and brazing entirely, since the fuel system is embedded in the printed casing.</p>
+
+          <p>A central tradeoff in the design is the
+size and placement of dilution and liner holes; smaller holes force more air through each jet, improving penetration and
+flame stabilization but reducing overall wall cooling. Larger holes admit more cooling flow, but at the cost of residence
+time and combustion efficiency. We iterated through multiple different designs to balance cooling with stability, creating a
+combustor tailored to a polymer casing while still achieving the target thrust class.</p>
+
+          <p>Another key research direction for this
+engine has been its thermal signature management. Traditional microturbines radiate strongly from hot metal casings. In
+this design, the fuel-cooled polymer body blocks line-of-sight to the combustor and hot hardware, so the outer surface
+radiates very little energy. Instead, emissions are biased rearward into the plume. This plume-only IR signature is valuable
+for seeker calibration and sensor testing, because it replicates what real aircraft engines present to a detector, hot exhaust
+and a comparatively cold body, rather than the unrealistic signature standard micro gas turbines of this scale emit.</p>
+
+          <p>Test variants experimented with different convergence
+angles, center-body lengths, and sheath offsets, exploiting the Coanda effect, where the high-speed exhaust flow entrains
+ambient air. This creates a passive insulating layer of cool air around the plume, reducing IR from the nozzle and sheath
+without active systems.</p>
+
+          <h3 style="margin-top:16px">What I Built / Did</h3>
+          <ul>
+            <li>The
+channels are tuned so that fuel remains liquid until injection, ensuring pre-heating of the fuel, and targeting phase-change
+cooling at the injection points along the shaft tunnel.</li>
+            <li>Regenerative cooling is what makes a polymer engine feasible,
+preventing the casing from ever reaching its heat deflection temperature even though the surrounding gas path operates
+orders of magnitude hotter.</li>
+            <li>The combustor is a ground-up design, verified through CFD and airflow simulations.</li>
+            <li>To enhance the IR suppression effect, I developed experimental nozzle/sheath combinations consisting of dual-wall
+nozzles with external sheaths that block direct line-of-sight and entrain ambient air into the annulus and center-body spike
+nozzles that reshape the exhaust jet and damp acoustic modes.</li>
+            <li>The engine design has been validated through CFD of the annulus and channels, transient heat
+transfer analysis of the casing, and FEA of stresses under combined pressure and thermal expansion. Cold-flow tests
+confirmed even distribution through the annulus and matched predicted pressure drops.</li>
+            <li>For hot-fire testing, I designed a
+dedicated bench with fuel and ignition systems, a tachometer to measure rotating assembly speed,
+thermocouples for recording exhaust gas temperature (EGT), turbine inlet temperature (TIT), a thrust load cell, and synchronized IR video.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/prop_components.png"
+                  data-modal-alt="Propulsion components image"
+                  data-modal-caption="prop_components.png">
+            <img src="../assets/img/prop_components.png" alt="Propulsion components image" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: prop_components.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <aside class="panel" aria-label="Tools and outputs">
+          <h3>Tools</h3>
+          <ul>
+            <li>CFD of the annulus and channels</li>
+            <li>Transient heat transfer analysis of the casing</li>
+            <li>FEA of stresses under combined pressure and thermal expansion</li>
+            <li>Cold-flow tests</li>
+          </ul>
+
+          <h3 style="margin-top:16px">Results / Outputs</h3>
+          <ul>
+            <li>Preliminary results confirm that regenerative flow holds casing temperatures within material limits, and that IR emission
+is strongly plume-biased.</li>
+            <li>At a prototype cost of ~$600, this is the first demonstration of a polymer jet engine surviving
+operation through regenerative cooling.</li>
+            <li>It consolidates the casing, diffuser, combustor, shaft tunnel, and injectors into one
+printed part, eliminating brazing, sheet metal forming, and complex CNC machining.</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../particles.js-master/particles.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

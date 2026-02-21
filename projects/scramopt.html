@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ScramOpt — Jack Nelson</title>
+  <meta name="description" content="Project details sourced from PDFs only." />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="particles-js" aria-hidden="true"></div>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html#work">← Back to Selected Work</a>
+      </div>
+
+      <h1 class="page-title">ScramOpt</h1>
+      <p class="page-sub">This page must contain only text explicitly present in the provided PDFs. Any missing detail is marked.</p>
+
+      <div class="page-grid">
+        <section class="panel" aria-label="Project details">
+          <h3>Overview</h3>
+          <p>Expanding from my work on gas turbines, I am also working with my little brother on a scramjet optimization project
+based on JAXA’s M12-02 engine. We use Bayesian optimization with Gaussian process regression and Latin hypercube
+sampling to explore geometry and flow conditions, optimizing for thrust while considering thermal limits and avoiding
+inlet unstart conditions. The workflow I designed is fully automated and headless.</p>
+
+          <p>Using FreeCAD macros, the pipeline
+parametrically generates new scramjet geometries, varying key features such as inlet contraction, combustor length, fuel
+injection location and rate, and nozzle expansion. Each geometry is then meshed and simulated in SU2, where we run
+compressible Navier–Stokes solvers with turbulence and combustion models tuned to Mach 5.5 freestream conditions.</p>
+
+          <p>The CFD results feed into a surrogate model built with Gaussian Process Regression, seeded with Latin Hypercube
+Sampling for initial coverage. A Bayesian Optimization loop then guides the exploration, training the surrogate to predict
+flow outcomes and only sending the most promising candidates back to SU2 for verification.</p>
+
+          <h3 style="margin-top:16px">What I Built / Did</h3>
+          <ul>
+            <li>To accelerate convergence, I
+also incorporate adjoint-based solvers to extract gradient information, and the pipeline automatically recovers from failed
+simulations so it can run continuously on HPC resources.</li>
+            <li>We have scheduled large-scale runs on the Perlmutter
+supercomputer at Lawrence Berkeley National Laboratory, where I will deploy the full optimization framework.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal" type="button"
+                  data-modal-src="../assets/img/ga_phi_psi_Pib_best_mean.png"
+                  data-modal-alt="Optimization visualization"
+                  data-modal-caption="Optimization visualization">
+            <img src="../assets/img/ga_phi_psi_Pib_best_mean.png" alt="Optimization visualization" loading="lazy" />
+            <span class="media-fallback" aria-hidden="true">Missing asset: ga_phi_psi_Pib_best_mean.png</span>
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <aside class="panel" aria-label="Tools and outputs">
+          <h3>Tools</h3>
+          <ul>
+            <li>Bayesian optimization</li>
+            <li>Gaussian process regression</li>
+            <li>Latin hypercube sampling</li>
+            <li>FreeCAD macros</li>
+            <li>SU2</li>
+            <li>Compressible Navier–Stokes solvers with turbulence and combustion models tuned to Mach 5.5 freestream conditions</li>
+            <li>Adjoint-based solvers</li>
+          </ul>
+
+          <h3 style="margin-top:16px">Results / Outputs</h3>
+          <ul>
+            <li>The pipeline automatically recovers from failed
+simulations so it can run continuously on HPC resources.</li>
+            <li>We have scheduled large-scale runs on the Perlmutter
+supercomputer at Lawrence Berkeley National Laboratory, where I will deploy the full optimization framework.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+          <p style="margin:0;color:rgba(255,255,255,.72)">If your PDFs include a repository URL or publication link, it can be added here verbatim.</p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../particles.js-master/particles.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

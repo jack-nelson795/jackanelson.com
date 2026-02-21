@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Micro Gas Turbine — Jack Nelson</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+      <nav class="nav">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html#work">← Back</a>
+      </div>
+
+      <h1 class="page-title">Regeneratively Cooled, IR-Suppressed, Additively Manufactured, Monolithic Micro Gas Turbine</h1>
+      <p class="page-sub">
+        Project description and bullet points below are taken only from your provided PDFs (Resume + Engineering Projects).
+      </p>
+
+      <div class="page-grid">
+        <section class="panel">
+          <h3>What it is (from your PDFs)</h3>
+          <ul>
+            <li>Designed, simulated, and manufactured a fully 3D-printed polymer micro gas turbine with regenerative fuel cooling and directional IR suppression.</li>
+            <li>Reduced part count through a monolithic structure.</li>
+            <li>Prototype cost stated as under $600.</li>
+            <li>Conducted materials analysis on thermoset resins and ceramic composites, iterating through multiple designs.</li>
+            <li>Engineered regenerative flow paths and combustor geometry for enhanced heat resistance and structural durability.</li>
+          </ul>
+
+          <div style="height:12px"></div>
+
+          <button class="media-tile js-open-modal"
+                  data-modal-src="../assets/prop_components.png"
+                  data-modal-alt="Components layout"
+                  data-modal-caption="Components layout (click to expand)">
+            <img src="../assets/prop_components.png" alt="Components layout" loading="lazy" />
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </section>
+
+        <aside class="panel">
+          <h3>Key facts (from your PDFs)</h3>
+          <div class="kv">
+            <div class="k">Type</div><div class="v">Micro gas turbine</div>
+            <div class="k">Build</div><div class="v">Fully 3D-printed polymer (prototype)</div>
+            <div class="k">Cooling</div><div class="v">Regenerative fuel cooling</div>
+            <div class="k">Signature</div><div class="v">Directional IR suppression</div>
+            <div class="k">Structure</div><div class="v">Monolithic / reduced part count</div>
+            <div class="k">Cost</div><div class="v">Prototype cost under $600</div>
+          </div>
+
+          <div style="height:12px"></div>
+          <button class="media-tile js-open-modal"
+                  data-modal-src="../assets/prop_hotfire.png"
+                  data-modal-alt="Hotfire plume"
+                  data-modal-caption="Test image: hotfire plume (click to expand)">
+            <img src="../assets/prop_hotfire.png" alt="Hotfire plume" loading="lazy" />
+            <span class="media-glow" aria-hidden="true"></span>
+          </button>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- LIGHTBOX MODAL -->
+  <div class="modal" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" title="Close (Esc)" data-close="true">✕</button>
+      <figure class="modal-figure">
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption" class="modal-caption"></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+Jack Nelson
+Mechanical Engineering — UC Berkeley
+Engineering Research Technical Portfolio
+Propulsion, Hypersonics, Computational Optimization, & Emergent Swarm Autonomy
+I am developing a regeneratively cooled, additively manufactured 100 N-class micro gas turbine engine built as a
+largely monolithic polymer structure. The diffuser, combustor, shaft tunnel, and fuel injection system are integrated
+into a single SLA-printed high-heat-deflection thermoset casing, with only the rotating assembly and nozzle guide
+vanes metallic. Fuel enters an annular distributor ring, flows through embedded axial channels along the casing and
+combustor wall, and is injected radially into the combustor, enabling regenerative cooling without brazed tubing or
+sheet-metal fabrication. Internal flow paths were validated through CFD, and transient heat transfer analysis and FEA
+were conducted under combined thermal and pressure loading to verify structural and thermal survivability. I designed
+and built a fully instrumented hot-fire test bench including thrust load cell, tachometer, turbine inlet and exhaust gas
+temperature measurement, and synchronized IR imaging for signature analysis. Preliminary testing confirms casing
+temperatures remain within material limits and that emissions are strongly plume-biased. A provisional patent has
+been filed and SBIR funding is being pursued to mature the architecture.
+In parallel, I developed ScramOpt, a fully automated CFD and Bayesian optimization framework for hypersonic
+scramjet geometry exploration based on JAXA’s M12-02 configuration. The pipeline parametrically generates scramjet
+geometries in FreeCAD, meshes and simulates compressible Navier–Stokes flow in SU2 at Mach 5.5 freestream
+conditions, and trains a Gaussian Process Regression surrogate model seeded with Latin Hypercube Sampling to ensure
+broad design-space coverage. A Bayesian optimization loop iteratively selects promising designs for high-fidelity
+verification while incorporating adjoint-derived gradient information to accelerate convergence. The framework is
+structured for headless HPC deployment with automated failure recovery and parallel evaluation across compute
+nodes. The objective is thrust maximization under thermal and inlet-unstart constraints, enabling efficient exploration
+of non-convex, high-dimensional hypersonic propulsion design spaces relevant to AFRL-level research problems.
+As a Student Propulsion Engineer on Space Enterprise at Berkeley’s Eureka 3 bipropellant rocket team, I engineered
+the quick-disconnect fill system to streamline propellant loading operations, optimized bulkhead geometry for structural
+performance under pressurization, and performed IPA injector CFD in collaboration with the simulations team to
+support propulsion subsystem validation. The regeneratively cooled Inconel-718 engine achieved 11 kN thrust in
+testing.
+Beyond propulsion, I developed a modular optimization toolbox and emergent multi-agent swarm simulation framework
+for decentralized control problems. Using genetic algorithms with customizable crossover and mutation strategies,
+the system evolves local control laws governing attraction, separation, cohesion, and obstacle avoidance forces
+for autonomous agents operating in 3D environments. Fitness evaluation is parallelized across CPU cores and
+validated in full physics-based simulations. The project demonstrates how evolutionary computation can discover
+robust decentralized strategies in nonlinear, high-dimensional systems where traditional gradient-based methods are
+ineffective, reinforcing my broader interest in computational optimization for complex aerospace systems.
+
+Jack Nelson
+Mechanical Engineering — UC Berkeley
+Selected Visualizations & Demonstrations
+Physical Propulsion Projects (Micro Turbine and Liquid Rocket Engine)
+Gas Turbine Components
+Hot-Fire Test
+Test Stand (Side)
+Instrumented Front
+Emergent Multi-Agent Intercept Dynamics
+Temporal evolution of decentralized swarm interception governed by genetically evolved local interaction laws.

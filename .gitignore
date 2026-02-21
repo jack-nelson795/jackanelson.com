@@ -1,0 +1,16 @@
+# Python virtual environment
+.venv/
+
+# Editor / tooling
+.vscode/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Optional local artifacts
+*.log
