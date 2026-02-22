@@ -14,3 +14,6 @@ Thumbs.db
 
 # Optional local artifacts
 *.log
+
+# Local backup snapshots
+sim.html.backup-*.html

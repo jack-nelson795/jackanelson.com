@@ -225,6 +225,26 @@
     installParticlesHoverGlow();
   }
 
+  function initSimPresetIframes() {
+    var iframes = document.querySelectorAll("iframe[data-sim-embed]");
+    if (!iframes || iframes.length === 0) return;
+
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest && e.target.closest("button[data-sim-src]");
+      if (!btn) return;
+
+      var src = btn.getAttribute("data-sim-src");
+      if (!src) return;
+
+      var panel = btn.closest(".panel") || document;
+      var iframe = panel.querySelector && panel.querySelector("iframe[data-sim-embed]");
+      if (!iframe) iframe = iframes[0];
+
+      e.preventDefault();
+      iframe.setAttribute("src", src);
+    });
+  }
+
   function initGalleryDeepLinks() {
     var body = document.body;
     if (!body || body.getAttribute("data-gallery-page") !== "true") return;
@@ -565,5 +585,6 @@
   markMissingImages();
   initLightbox();
   initGalleryDeepLinks();
+  initSimPresetIframes();
   initParticles();
 })();

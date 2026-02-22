@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>2D Euler Inlet Flow + Schlieren (CFD-style)</title>
+  <style>
+    :root { color-scheme: dark; }
+    body{
+      margin:0; padding:24px;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:#070a0f; color:rgba(255,255,255,0.92);
+    }
+    .shock-demo{ max-width:1100px; margin:0 auto; }
+    .shock-demo__header h2{ margin:0 0 .35rem 0; }
+    .shock-demo__sub{ margin:0 0 1rem 0; opacity:.85; max-width:86ch; }
+
+    .shock-demo__controls{
+      display:grid;
+      grid-template-columns:1.2fr 1.2fr 1fr .7fr .9fr;
+      gap:.75rem 1rem;
+      align-items:end;
+      margin-bottom:.75rem;
+    }
+    .shock-demo__controls label{ display:grid; gap:.25rem; font-size:.95rem; }
+    .shock-demo__controls input[type="range"]{ width:100%; }
+    .shock-demo__controls select{ width:100%; padding:.35rem; }
+    .shock-demo__controls .inline{
+      display:flex; gap:10px; align-items:center; white-space:nowrap; padding:.25rem 0;
+    }
+    .shock-demo__controls input[type="range"]:disabled,
+    .shock-demo__controls select:disabled{
+      opacity:0.45;
+      cursor:not-allowed;
+    }
+
+    .shock-demo__stage{
+      position:relative;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:12px;
+      overflow:hidden;
+      background:#000;
+    }
+    canvas{ display:block; width:100%; height:auto; background:#000; }
+
+    .shock-demo__about{
+      margin-top: 14px;
+      padding: 0 2px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.88);
+      max-width: 92ch;
+    }
+    .shock-demo__about h3{
+      margin: 0 0 .35rem 0;
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.94);
+    }
+    .shock-demo__about p{ margin: .5rem 0; }
+    .shock-demo__about ul{ margin: .5rem 0 .75rem 1.1rem; padding: 0; }
+    .shock-demo__about li{ margin: .25rem 0; }
+
+    .shock-demo__readout{
+      position:absolute;
+      left:12px; bottom:12px;
+      padding:.65rem .8rem;
+      background:rgba(0,0,0,0.55);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:12px;
+      backdrop-filter:blur(6px);
+      max-width:min(590px, calc(100% - 24px));
+      line-height:1.35;
+      font-size:.92rem;
+      white-space:pre-wrap;
+    }
+
+    /* Temporary: hide log/readout while dialing in visuals */
+    .shock-demo__readout{ display:none; }
+    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
+    .pill{
+      display:inline-block; padding:2px 8px;
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:999px;
+      font-size:12px; opacity:.9;
+    }
+    @media (max-width:980px){
+      .shock-demo__controls{ grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="shock-demo" aria-labelledby="shockDemoTitle">
+    <div class="shock-demo__header">
+      <h2 id="shockDemoTitle">2D Euler Inlet Flow + Schlieren (CFD-style)</h2>
+      <p class="shock-demo__sub">
+        Adjustable inlet turn angle and freestream Mach. Runs a coarse 2D compressible Euler (finite-volume) simulation
+        with solid reflective walls for the ramp/duct/cowl geometry. Schlieren is derived from the density-gradient field.
+      </p>
+    </div>
+
+    <div class="shock-demo__controls" role="group" aria-label="Shock demo controls">
+      <label>
+        Freestream Mach, M₁:
+        <input id="mach" type="range" min="1.2" max="6.0" step="0.05" value="3.0" />
+        <span id="machVal" class="mono"></span>
+      </label>
+
+      <label>
+        Turn angle, θ (deg):
+        <input id="theta" type="range" min="-12.0" max="25.0" step="0.1" value="22.0" />
+        <span id="thetaVal" class="mono"></span>
+      </label>
+
+      <label>
+        View:
+        <select id="view">
+          <option value="pressure">Pressure ratio (p/p₁)</option>
+          <option value="density" selected>Density ratio (ρ/ρ₁)</option>
+          <option value="mach">Mach number (M)</option>
+          <option value="schlieren">Schlieren (CFD-style)</option>
+        </select>
+      </label>
+
+      <label>
+        γ (air):
+        <select id="gamma">
+          <option value="1.4" selected>1.4</option>
+          <option value="1.33">1.33</option>
+          <option value="1.3">1.3</option>
+        </select>
+      </label>
+
+      <label class="inline">
+        <input id="duct" type="checkbox" checked />
+        Duct (solid walls)
+      </label>
+
+      <label>
+        Duct height, H:
+        <input id="ductH" type="range" min="12" max="32" step="0.5" value="21.0" />
+        <span id="ductHVal" class="mono"></span>
+      </label>
+
+      <label>
+        Schlieren sensitivity:
+        <select id="schMode">
+          <option value="dx" selected>Directional (∂/∂x)</option>
+          <option value="dy">Directional (∂/∂y)</option>
+          <option value="mag">Magnitude (|∇|)</option>
+        </select>
+      </label>
+
+      <label>
+        Schlieren gain:
+        <input id="schGain" type="range" min="5" max="60" step="1" value="28" />
+        <span id="schGainVal" class="mono"></span>
+      </label>
+
+      <label>
+        Texture:
+        <input id="tex" type="range" min="0" max="25" step="1" value="10" />
+        <span id="texVal" class="mono"></span>
+      </label>
+
+      <label class="inline">
+        <input id="streamlines" type="checkbox" />
+        Streamlines
+      </label>
+
+      <label class="inline">
+        <input id="fixedRange" type="checkbox" checked />
+        Fixed color range
+      </label>
+
+      <label class="inline" style="grid-column: 1 / -1; opacity: 0.85;">
+        <span class="mono">Tip:</span> For the “wind-tunnel” look: Schlieren + θ≈10–18°, M₁≈3–6.
+      </label>
+    </div>
+
+    <div class="shock-demo__stage">
+      <canvas id="c" width="960" height="540" aria-label="Shock visualization canvas"></canvas>
+      <div class="shock-demo__readout mono" id="readout"></div>
+    </div>
+
+    <div class="shock-demo__about" aria-label="Project description">
+      <h3>About this project</h3>
+      <p>
+        This is a browser-based, interactive inlet/duct flow visualization driven by a coarse 2D compressible Euler solver.
+        You control the freestream Mach number <span class="mono">M₁</span> and the inlet turn angle <span class="mono">θ</span>, then watch how
+        compression waves and shocks form and interact with a simplified inlet/duct/cowl geometry.
+      </p>
+
+      <p>
+        The scalar views (<span class="mono">ρ/ρ₁</span>, <span class="mono">p/p₁</span>, and <span class="mono">M</span>) come from sampling the simulated
+        flow field. The Schlieren view is a “CFD-style” visualization computed from the density gradient (a stand-in for optical
+        schlieren photography): sharp gradients show up as bright features.
+      </p>
+
+      <p><strong>What it shows</strong></p>
+      <ul>
+        <li><span class="mono">Ramp turning</span>: a turn angle imposes a change in flow direction that produces shock structures (or weaker compressions) downstream.</li>
+        <li><span class="mono">Wall interaction</span>: the ramp/duct/cowl are treated as solid reflective boundaries, so waves reflect and reshape as they propagate.</li>
+        <li><span class="mono">Inlet capture vs spillage (qualitative)</span>: depending on <span class="mono">M₁</span> and <span class="mono">θ</span>, some features convect into the duct while others run outside.</li>
+        <li><span class="mono">Unsteady settling</span>: the solver advances continuously; the field “spins up” from the inflow state toward a quasi-steady pattern.</li>
+      </ul>
+
+      <p><strong>What it hopes to accomplish</strong></p>
+      <ul>
+        <li>Provide an intuitive, fast way to explore how inlet turning and geometry influence shock topology and schlieren appearance.</li>
+        <li>Give a physically grounded alternative to purely analytic/painted shocks: downstream structures emerge from the PDE solver rather than being drawn as overlays.</li>
+        <li>Offer a compact, single-file demo that runs anywhere (no build step, no external dependencies) and can be iterated quickly.</li>
+      </ul>
+
+      <p><strong>What it is not</strong></p>
+      <ul>
+        <li><span class="mono">Not high-fidelity CFD</span>: this is an inviscid Euler model (no viscosity, no boundary layers, no turbulence model, no heat transfer).</li>
+        <li><span class="mono">Not a validated design tool</span>: results are qualitative; they are not calibrated to a specific experiment, mesh study, or uncertainty quantification.</li>
+        <li><span class="mono">Not a perfect boundary treatment</span>: the outer boundaries use simple conditions plus damping to reduce reflections; some artifacts can still exist.</li>
+        <li><span class="mono">Not high order</span>: the numerical method is intentionally simple/coarse for real-time speed, so shocks are thicker and small features are smeared.</li>
+        <li><span class="mono">Not 3D</span>: sidewall effects and full inlet three-dimensionality are not represented.</li>
+      </ul>
+
+      <p><strong>Controls glossary (what it changes / what to look for)</strong></p>
+      <ul>
+        <li><span class="mono">Freestream Mach, M₁</span>: Sets the inflow speed. Higher <span class="mono">M₁</span> generally makes shocks stronger and sharper (larger jumps in <span class="mono">ρ/ρ₁</span> and <span class="mono">p/p₁</span>), and increases the complexity/spacing of reflections.</li>
+        <li><span class="mono">Turn angle, θ</span>: Sets the inlet/ramp turning angle. Increasing <span class="mono">θ</span> tends to move/strengthen the main compression structure and changes how much of the wave system interacts with the duct/cowl.</li>
+        <li><span class="mono">View</span>:
+          <span class="mono">ρ/ρ₁</span> shows density ratio (good for “CFD contour” look),
+          <span class="mono">p/p₁</span> shows pressure ratio (often highlights shocks clearly),
+          <span class="mono">M</span> shows local Mach number,
+          <span class="mono">Schlieren</span> shows a contrast-enhanced density-gradient image (good for wave visualization).</li>
+        <li><span class="mono">γ (air)</span>: Changes the ratio of specific heats in the model. This affects wave speeds and shock strengths for the same <span class="mono">M₁</span> and <span class="mono">θ</span>; subtle but noticeable in compression intensity and downstream structure.</li>
+        <li><span class="mono">Duct (solid walls)</span>: Toggles the upper cowl/duct geometry as a solid boundary. When enabled, shocks/waves reflect from the walls and you should see different internal patterns versus the “open” case.</li>
+        <li><span class="mono">Schlieren sensitivity</span> (only in Schlieren view): Chooses which density-gradient component is emphasized:
+          <span class="mono">∂/∂x</span> highlights features with strong streamwise gradients,
+          <span class="mono">∂/∂y</span> highlights vertical gradients,
+          <span class="mono">|∇|</span> highlights overall gradient magnitude.</li>
+        <li><span class="mono">Schlieren gain</span> (only in Schlieren view): Contrast/compression tuning for the Schlieren image. Higher gain makes weak waves more visible but can also saturate bright regions.</li>
+        <li><span class="mono">Texture</span> (only in Schlieren + Density Ratio): Adds a small procedural “numerical texture” to reduce banding and mimic CFD/optical grain. Set to 0 for the cleanest contours.</li>
+        <li><span class="mono">Streamlines</span>: Draws approximate streamlines over the field. This is a visualization aid (not a separate solver); it can help show turning and capture/spillage qualitatively.</li>
+        <li><span class="mono">Fixed color range</span>: When enabled, uses a fixed mapping range so colors are comparable across parameter changes; when disabled, the range auto-scales to the current frame (more contrast, less comparability).</li>
+      </ul>
+    </div>
+  </section>
+
+  <script>
+  (() => {
+    const params = new URLSearchParams(window.location.search);
+    const isEmbed = params.get("embed") === "1";
+
+    // ---------- DOM ----------
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d");
+
+    if (isEmbed) {
+      const about = document.querySelector(".shock-demo__about");
+      if (about) about.remove();
+    }
+
+    const machEl = document.getElementById("mach");
+    const thetaEl = document.getElementById("theta");
+    const viewEl = document.getElementById("view");
+    const gammaEl = document.getElementById("gamma");
+    const ductEl = document.getElementById("duct");
+    const ductHEl = document.getElementById("ductH");
+    const schModeEl = document.getElementById("schMode");
+    const schGainEl = document.getElementById("schGain");
+    const texEl = document.getElementById("tex");
+    const streamEl = document.getElementById("streamlines");
+    const fixedRangeEl = document.getElementById("fixedRange");
+
+    const machVal = document.getElementById("machVal");
+    const thetaVal = document.getElementById("thetaVal");
+    const ductHVal = document.getElementById("ductHVal");
+    const schGainVal = document.getElementById("schGainVal");
+    const texVal = document.getElementById("texVal");
+    const readout = document.getElementById("readout");
+
+    function updateControlEnablement(view) {
+      // Schlieren gain only matters for schlieren.
+      schGainEl.disabled = (view !== "schlieren");
+      // Texture is used only for schlieren and density.
+      texEl.disabled = !(view === "schlieren" || view === "density");
+    }
+
+    // ---------- Math ----------
+    const deg2rad = d => d * Math.PI / 180;
+    const rad2deg = r => r * 180 / Math.PI;
+    const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+    function smoothstep(t){ return t*t*(3-2*t); }
+
+    // θ–β–M residual:
+    function thetaBetaMResidual(beta, theta, M, g) {
+      const sb = Math.sin(beta);
+      const cb = Math.cos(beta);
+      const s2 = sb * sb;
+      const numerator = 2 * (cb / sb) * (M*M*s2 - 1);
+      const denom = M*M * (g + Math.cos(2*beta)) + 2;
+      const rhs = numerator / denom;
+      return Math.tan(theta) - rhs;
+    }
+
+    // Weak attached β solve via scan+bisect
+    function solveBetaWeak(theta, M, g) {
+      const betaMin = Math.asin(1 / M) + 1e-4;
+      const betaMax = (Math.PI / 2) - 1e-3;
+
+      const N = 240;
+      let prevB = betaMin;
+      let prevF = thetaBetaMResidual(prevB, theta, M, g);
+
+      for (let i = 1; i <= N; i++) {
+        const b = betaMin + (betaMax - betaMin) * (i / N);
+        const f = thetaBetaMResidual(b, theta, M, g);
+
+        const signChange =
+          isFinite(prevF) && isFinite(f) &&
+          (prevF === 0 || f === 0 || (prevF < 0 && f > 0) || (prevF > 0 && f < 0));
+
+        if (signChange) {
+          let lo = prevB, hi = b;
+          let flo = prevF;
+          for (let it = 0; it < 70; it++) {
+            const mid = 0.5 * (lo + hi);
+            const fmid = thetaBetaMResidual(mid, theta, M, g);
+            if (!isFinite(fmid)) break;
+            if (Math.abs(fmid) < 1e-12) return mid;
+            if ((flo < 0 && fmid > 0) || (flo > 0 && fmid < 0)) hi = mid;
+            else { lo = mid; flo = fmid; }
+          }
+          return 0.5 * (lo + hi);
+        }
+        prevB = b;
+        prevF = f;
+      }
+      return null;
+    }
+
+    // Oblique shock relations via normal component
+    function obliqueShock(M1, theta, beta, g) {
+      const Mn1 = M1 * Math.sin(beta);
+
+      const Mn2_sq =
+        (1 + 0.5*(g-1)*Mn1*Mn1) /
+        (g*Mn1*Mn1 - 0.5*(g-1));
+
+      const Mn2 = Math.sqrt(Math.max(Mn2_sq, 1e-12));
+      const M2 = Mn2 / Math.max(1e-8, Math.sin(beta - theta));
+
+      const p2_p1 = 1 + (2*g/(g+1)) * (Mn1*Mn1 - 1);
+      const rho2_rho1 = ((g+1)*Mn1*Mn1) / ((g-1)*Mn1*Mn1 + 2);
+      const T2_T1 = p2_p1 / rho2_rho1;
+
+      return { Mn1, Mn2, M2, p2_p1, rho2_rho1, T2_T1 };
+    }
+
+    // Colormap for scalar modes
+    function heatColor(t) {
+      t = clamp(t, 0, 1);
+      const stops = [
+        {t:0.00, c:[ 20,  60, 160]},
+        {t:0.25, c:[ 40, 180, 220]},
+        {t:0.50, c:[ 70, 210, 130]},
+        {t:0.75, c:[245, 225,  70]},
+        {t:1.00, c:[230,  70,  55]},
+      ];
+      let i = 0;
+      while (i < stops.length-1 && t > stops[i+1].t) i++;
+      const a = stops[i], b = stops[i+1];
+      const u = (t - a.t) / (b.t - a.t + 1e-12);
+      const r = Math.round(a.c[0] + u*(b.c[0]-a.c[0]));
+      const g = Math.round(a.c[1] + u*(b.c[1]-a.c[1]));
+      const bl= Math.round(a.c[2] + u*(b.c[2]-a.c[2]));
+      return `rgb(${r},${g},${bl})`;
+    }
+
+    // ---------- Geometry helpers (math coords: +x right, +y up) ----------
+    // Sketch-driven geometry (fixed, does NOT move with the θ slider).
+    // Coordinate system: lower-wall corner at (0,0). Upstream is x<0. Duct is x>=0.
+    // Two upstream ramps (10° then 22°) into the corner; downstream floor is horizontal.
+    const GEOM = {
+      // lengths (same units as the sketch)
+      L_total: 150.0,
+      L_up: 81.7,
+      L_kink: 28.0,
+
+      // angles
+      a1: deg2rad(10.0),
+      a2: deg2rad(22.0),
+      aCowl: deg2rad(30.0),
+
+      // verticals / thicknesses
+      ductH: 21.0,
+      cowlT: 15.0,
+      lowerT: 9.0,
+    };
+
+    // Derived stations
+    GEOM.xUp = -GEOM.L_up;
+    GEOM.xKink = -GEOM.L_kink;
+    GEOM.xEnd = GEOM.L_total - GEOM.L_up;
+
+    // Derived cowl wedge upstream reach for a leading face at aCowl
+    GEOM.cowlLead = GEOM.cowlT / Math.max(1e-9, Math.tan(GEOM.aCowl));
+
+    const GEOM_M1 = Math.tan(GEOM.a1);
+    const GEOM_M2 = Math.tan(GEOM.a2);
+
+    function lowerWallSegment(px) {
+      if (px >= 0) return { m: 0, b: 0 };
+      if (px >= GEOM.xKink) return { m: GEOM_M2, b: 0 }; // passes through corner
+      // Upstream segment passes through (xKink, yKink) for C0 continuity.
+      const yKink = GEOM_M2 * GEOM.xKink;
+      const b = yKink - GEOM_M1 * GEOM.xKink;
+      return { m: GEOM_M1, b };
+    }
+
+    function lowerWallY(px) {
+      const seg = lowerWallSegment(px);
+      return seg.m * px + seg.b;
+    }
+
+    function pointAboveLowerWall(px, py) {
+      return py >= lowerWallY(px) - 1e-7;
+    }
+
+
+    function pointBelowUpperWall(px, py, Hduct) {
+      return py <= Hduct + 1e-7;
+    }
+
+    function inDuct(px, py, ductOn, Hduct) {
+      if (!ductOn) return false;
+      if (px < 0) return false;
+      // Duct is between the horizontal floor at y=0 and ceiling at y=Hduct.
+      return py >= -1e-7 && py <= Hduct + 1e-7;
+    }
+
+    function inUpperCowlSolid(px, py) {
+      // Matches drawSolids() upper cowl: nose at (0, Hduct), wedge top to (cowlLead, Hduct+cowlT),
+      // then rectangle to the right with thickness cowlT.
+      if (px < 0) return false;
+      if (py < GEOM.ductH - 1e-7) return false;
+      if (py > (GEOM.ductH + GEOM.cowlT) + 1e-7) return false;
+
+      // For 0 <= x <= cowlLead, lower boundary is the wedge line from (0,Hduct) to (cowlLead,Hduct+cowlT)
+      if (px <= GEOM.cowlLead + 1e-9) {
+        const yW = GEOM.ductH + (GEOM.cowlT / Math.max(1e-9, GEOM.cowlLead)) * px;
+        return py >= yW - 1e-7;
+      }
+
+      // For x > cowlLead, it's a full thickness block above the ceiling.
+      return true;
+    }
+
+    function intersectRayWithHorizontal(p0x, p0y, dx, dy, yLine) {
+      if (Math.abs(dy) < 1e-10) return null;
+      const t = (yLine - p0y) / dy;
+      if (t <= 0) return null;
+      return { x: p0x + t*dx, y: yLine, t };
+    }
+    function intersectRayWithLine(p0x, p0y, dx, dy, a, b, c) {
+      const denom = a*dx + b*dy;
+      if (Math.abs(denom) < 1e-10) return null;
+      const t = -(a*p0x + b*p0y + c) / denom;
+      if (t <= 0) return null;
+      return { x: p0x + t*dx, y: p0y + t*dy, t };
+    }
+    function reflectDirAcrossHorizontal(dx, dy) { return { x: dx, y: -dy }; }
+    function reflectDirAcrossLine(dx, dy, nx, ny) {
+      const dot = dx*nx + dy*ny;
+      return { x: dx - 2*dot*nx, y: dy - 2*dot*ny };
+    }
+
+    function signedDistToAngleLine(px, py, angle) {
+      const nx = -Math.sin(angle);
+      const ny =  Math.cos(angle);
+      return nx*px + ny*py;
+    }
+
+    function signedDistToLineThrough(px, py, x0, y0, angle) {
+      const nx = -Math.sin(angle);
+      const ny =  Math.cos(angle);
+      return nx*(px - x0) + ny*(py - y0);
+    }
+
+    // ---------- Coarse 2D Euler solver (real(ish) physics) ----------
+    // Finite-volume, 1st-order Rusanov flux. Reflective walls for solids.
+    // This is still simplified (diffusive, coarse grid), but it *is* a PDE solve.
+    function primToCons(rho, u, v, p, g) {
+      const E = p / Math.max(1e-12, (g - 1)) + 0.5 * rho * (u*u + v*v);
+      return [rho, rho*u, rho*v, E];
+    }
+    function consToPrim(U0, U1, U2, U3, g) {
+      const rho = Math.max(1e-8, U0);
+      const u = U1 / rho;
+      const v = U2 / rho;
+      const ke = 0.5 * rho * (u*u + v*v);
+      let p = (g - 1) * Math.max(1e-12, (U3 - ke));
+      p = Math.max(1e-8, p);
+      const a = Math.sqrt(g * p / rho);
+      return { rho, u, v, p, a };
+    }
+    function fluxX(U0, U1, U2, U3, g) {
+      const P = consToPrim(U0, U1, U2, U3, g);
+      const F0 = U1;
+      const F1 = U1*P.u + P.p;
+      const F2 = U1*P.v;
+      const F3 = (U3 + P.p) * P.u;
+      const s = Math.abs(P.u) + P.a;
+      return { F0, F1, F2, F3, s };
+    }
+    function fluxY(U0, U1, U2, U3, g) {
+      const P = consToPrim(U0, U1, U2, U3, g);
+      const G0 = U2;
+      const G1 = U2*P.u;
+      const G2 = U2*P.v + P.p;
+      const G3 = (U3 + P.p) * P.v;
+      const s = Math.abs(P.v) + P.a;
+      return { G0, G1, G2, G3, s };
+    }
+
+    function reflectVel(u, v, nx, ny) {
+      // reflect across normal (nx,ny)
+      const dot = u*nx + v*ny;
+      return { u: u - 2*dot*nx, v: v - 2*dot*ny };
+    }
+
+    function wallAngleAtX(px) {
+      if (px >= 0) return 0;
+      if (px >= GEOM.xKink) return GEOM.a2;
+      return GEOM.a1;
+    }
+
+    function cowlTopY(px) {
+      if (px < 0) return -1e9;
+      if (px <= GEOM.cowlLead) return GEOM.ductH + (GEOM.cowlT / Math.max(1e-9, GEOM.cowlLead)) * px;
+      return GEOM.ductH + GEOM.cowlT;
+    }
+
+    function isSolidAt(px, py, ductOn) {
+      // lower body is everything below the lower wall
+      if (!pointAboveLowerWall(px, py)) return true;
+      if (!ductOn) return false;
+      // upper cowl solid occupies thickness between ceiling and cowl top
+      if (px >= 0) {
+        const yTop = cowlTopY(px);
+        if (py >= GEOM.ductH - 1e-7 && py <= yTop + 1e-7) return true;
+      }
+      return false;
+    }
+
+    function wallNormalAt(px, py, ductOn, regionHint) {
+      // regionHint: "lower" | "ceiling" | "cowlTop" | null
+      if (regionHint === "lower") {
+        const ang = wallAngleAtX(px);
+        return { nx: -Math.sin(ang), ny: Math.cos(ang) };
+      }
+      if (!ductOn) {
+        return { nx: 0, ny: 1 };
+      }
+      if (regionHint === "ceiling") {
+        return { nx: 0, ny: 1 };
+      }
+      if (regionHint === "cowlTop") {
+        if (px <= GEOM.cowlLead) {
+          const ang = GEOM.aCowl;
+          return { nx: -Math.sin(ang), ny: Math.cos(ang) };
+        }
+        return { nx: 0, ny: 1 };
+      }
+      return { nx: 0, ny: 1 };
+    }
+
+    class Euler2D {
+      constructor(nx, ny, xMin, xMax, yMin, yMax, g, ductOn, inflow) {
+        this.nx = nx;
+        this.ny = ny;
+        this.xMin = xMin;
+        this.xMax = xMax;
+        this.yMin = yMin;
+        this.yMax = yMax;
+        this.dx = (xMax - xMin) / nx;
+        this.dy = (yMax - yMin) / ny;
+        this.g = g;
+        this.ductOn = ductOn;
+        this.inflow = inflow;
+        this.U0 = new Float32Array(nx * ny);
+        this.U1 = new Float32Array(nx * ny);
+        this.U2 = new Float32Array(nx * ny);
+        this.U3 = new Float32Array(nx * ny);
+        this.solid = new Uint8Array(nx * ny);
+        this.time = 0;
+        this.reset();
+      }
+
+      idx(i, j) { return j * this.nx + i; }
+      xAt(i) { return this.xMin + (i + 0.5) * this.dx; }
+      yAt(j) { return this.yMin + (j + 0.5) * this.dy; }
+
+      reset() {
+        const [r0, ru0, rv0, E0] = primToCons(this.inflow.rho, this.inflow.u, this.inflow.v, this.inflow.p, this.g);
+        for (let j = 0; j < this.ny; j++) {
+          const py = this.yAt(j);
+          for (let i = 0; i < this.nx; i++) {
+            const px = this.xAt(i);
+            const id = this.idx(i, j);
+            const solid = isSolidAt(px, py, this.ductOn);
+            this.solid[id] = solid ? 1 : 0;
+            this.U0[id] = r0;
+            this.U1[id] = ru0;
+            this.U2[id] = rv0;
+            this.U3[id] = E0;
+          }
+        }
+        this.time = 0;
+      }
+
+      getCons(i, j) {
+        // returns array [U0,U1,U2,U3] plus flags
+        const nx = this.nx, ny = this.ny;
+        if (i < 0) return { U: primToCons(this.inflow.rho, this.inflow.u, this.inflow.v, this.inflow.p, this.g), solid: false, bc: "inflow" };
+        if (i >= nx) {
+          const id = this.idx(nx-1, clamp(j, 0, ny-1));
+          return { U: [this.U0[id], this.U1[id], this.U2[id], this.U3[id]], solid: !!this.solid[id], bc: "outflow" };
+        }
+        if (j < 0) {
+          const id = this.idx(clamp(i, 0, nx-1), 0);
+          return { U: [this.U0[id], this.U1[id], this.U2[id], this.U3[id]], solid: !!this.solid[id], bc: "outflow" };
+        }
+        if (j >= ny) {
+          const id = this.idx(clamp(i, 0, nx-1), ny-1);
+          return { U: [this.U0[id], this.U1[id], this.U2[id], this.U3[id]], solid: !!this.solid[id], bc: "outflow" };
+        }
+        const id = this.idx(i, j);
+        return { U: [this.U0[id], this.U1[id], this.U2[id], this.U3[id]], solid: !!this.solid[id], bc: null };
+      }
+
+      ghostFromWall(Ufluid, px, py, hint) {
+        const P = consToPrim(Ufluid[0], Ufluid[1], Ufluid[2], Ufluid[3], this.g);
+        const n = wallNormalAt(px, py, this.ductOn, hint);
+        const nn = Math.hypot(n.nx, n.ny) + 1e-12;
+        const nx = n.nx / nn, ny = n.ny / nn;
+        const rv = reflectVel(P.u, P.v, nx, ny);
+        return primToCons(P.rho, rv.u, rv.v, P.p, this.g);
+      }
+
+      step(cfl = 0.45) {
+        const nx = this.nx, ny = this.ny;
+        const U0n = new Float32Array(nx * ny);
+        const U1n = new Float32Array(nx * ny);
+        const U2n = new Float32Array(nx * ny);
+        const U3n = new Float32Array(nx * ny);
+
+        // global dt
+        let dtInv = 0;
+        for (let j = 0; j < ny; j++) {
+          for (let i = 0; i < nx; i++) {
+            const id = this.idx(i, j);
+            if (this.solid[id]) continue;
+            const P = consToPrim(this.U0[id], this.U1[id], this.U2[id], this.U3[id], this.g);
+            dtInv = Math.max(dtInv, (Math.abs(P.u) + P.a) / this.dx);
+            dtInv = Math.max(dtInv, (Math.abs(P.v) + P.a) / this.dy);
+          }
+        }
+        const dt = cfl / Math.max(1e-9, dtInv);
+
+        for (let j = 0; j < ny; j++) {
+          const py = this.yAt(j);
+          for (let i = 0; i < nx; i++) {
+            const px = this.xAt(i);
+            const id = this.idx(i, j);
+            if (this.solid[id]) {
+              U0n[id] = this.U0[id];
+              U1n[id] = this.U1[id];
+              U2n[id] = this.U2[id];
+              U3n[id] = this.U3[id];
+              continue;
+            }
+
+            const Uc = [this.U0[id], this.U1[id], this.U2[id], this.U3[id]];
+
+            // X faces
+            const L = this.getCons(i-1, j);
+            const R = this.getCons(i+1, j);
+            let UL = L.U;
+            let UR = R.U;
+
+            // Reflect off solids if neighbor is solid
+            if (L.solid) {
+              // likely lower wall/cowl; choose hint based on where we are
+              const hint = (py <= GEOM.ductH + 1e-6 && px >= 0) ? "ceiling" : (py > GEOM.ductH + 1e-6 ? "cowlTop" : "lower");
+              UL = this.ghostFromWall(Uc, px, py, hint);
+            }
+            if (R.solid) {
+              const hint = (py <= GEOM.ductH + 1e-6 && px >= 0) ? "ceiling" : (py > GEOM.ductH + 1e-6 ? "cowlTop" : "lower");
+              UR = this.ghostFromWall(Uc, px, py, hint);
+            }
+
+            const FL = fluxX(UL[0], UL[1], UL[2], UL[3], this.g);
+            const FC = fluxX(Uc[0], Uc[1], Uc[2], Uc[3], this.g);
+            const FR = fluxX(UR[0], UR[1], UR[2], UR[3], this.g);
+
+            // Rusanov at i-1/2 uses (UL,Uc); at i+1/2 uses (Uc,UR)
+            const sL = Math.max(FL.s, FC.s);
+            const sR = Math.max(FC.s, FR.s);
+
+            const FxL0 = 0.5*(FL.F0 + FC.F0) - 0.5*sL*(Uc[0]-UL[0]);
+            const FxL1 = 0.5*(FL.F1 + FC.F1) - 0.5*sL*(Uc[1]-UL[1]);
+            const FxL2 = 0.5*(FL.F2 + FC.F2) - 0.5*sL*(Uc[2]-UL[2]);
+            const FxL3 = 0.5*(FL.F3 + FC.F3) - 0.5*sL*(Uc[3]-UL[3]);
+
+            const FxR0 = 0.5*(FC.F0 + FR.F0) - 0.5*sR*(UR[0]-Uc[0]);
+            const FxR1 = 0.5*(FC.F1 + FR.F1) - 0.5*sR*(UR[1]-Uc[1]);
+            const FxR2 = 0.5*(FC.F2 + FR.F2) - 0.5*sR*(UR[2]-Uc[2]);
+            const FxR3 = 0.5*(FC.F3 + FR.F3) - 0.5*sR*(UR[3]-Uc[3]);
+
+            // Y faces
+            const D = this.getCons(i, j-1);
+            const U = this.getCons(i, j+1);
+            let UD = D.U;
+            let UU = U.U;
+            if (D.solid) {
+              const hint = "lower";
+              UD = this.ghostFromWall(Uc, px, py, hint);
+            }
+            if (U.solid) {
+              const hint = (px >= 0 && py < GEOM.ductH) ? "ceiling" : "cowlTop";
+              UU = this.ghostFromWall(Uc, px, py, hint);
+            }
+
+            const GD = fluxY(UD[0], UD[1], UD[2], UD[3], this.g);
+            const GC = fluxY(Uc[0], Uc[1], Uc[2], Uc[3], this.g);
+            const GU = fluxY(UU[0], UU[1], UU[2], UU[3], this.g);
+
+            const sD = Math.max(GD.s, GC.s);
+            const sU = Math.max(GC.s, GU.s);
+
+            const GyD0 = 0.5*(GD.G0 + GC.G0) - 0.5*sD*(Uc[0]-UD[0]);
+            const GyD1 = 0.5*(GD.G1 + GC.G1) - 0.5*sD*(Uc[1]-UD[1]);
+            const GyD2 = 0.5*(GD.G2 + GC.G2) - 0.5*sD*(Uc[2]-UD[2]);
+            const GyD3 = 0.5*(GD.G3 + GC.G3) - 0.5*sD*(Uc[3]-UD[3]);
+
+            const GyU0 = 0.5*(GC.G0 + GU.G0) - 0.5*sU*(UU[0]-Uc[0]);
+            const GyU1 = 0.5*(GC.G1 + GU.G1) - 0.5*sU*(UU[1]-Uc[1]);
+            const GyU2 = 0.5*(GC.G2 + GU.G2) - 0.5*sU*(UU[2]-Uc[2]);
+            const GyU3 = 0.5*(GC.G3 + GU.G3) - 0.5*sU*(UU[3]-Uc[3]);
+
+            const U0p = Uc[0] - (dt/this.dx)*(FxR0 - FxL0) - (dt/this.dy)*(GyU0 - GyD0);
+            const U1p = Uc[1] - (dt/this.dx)*(FxR1 - FxL1) - (dt/this.dy)*(GyU1 - GyD1);
+            const U2p = Uc[2] - (dt/this.dx)*(FxR2 - FxL2) - (dt/this.dy)*(GyU2 - GyD2);
+            const U3p = Uc[3] - (dt/this.dx)*(FxR3 - FxL3) - (dt/this.dy)*(GyU3 - GyD3);
+
+            U0n[id] = U0p;
+            U1n[id] = U1p;
+            U2n[id] = U2p;
+            U3n[id] = U3p;
+          }
+        }
+
+        this.U0 = U0n;
+        this.U1 = U1n;
+        this.U2 = U2n;
+        this.U3 = U3n;
+
+        // Sponge layer near far-field boundaries to reduce reflections.
+        const nSpongeX = Math.max(6, Math.floor(nx * 0.10));
+        const nSpongeY = Math.max(6, Math.floor(ny * 0.12));
+        const Uinf = primToCons(this.inflow.rho, this.inflow.u, this.inflow.v, this.inflow.p, this.g);
+
+        for (let j = 0; j < ny; j++) {
+          const djTop = Math.max(0, j - (ny - nSpongeY));
+          const sj = djTop / Math.max(1, nSpongeY);
+          for (let i = 0; i < nx; i++) {
+            const id = this.idx(i, j);
+            if (this.solid[id]) continue;
+            const diRight = Math.max(0, i - (nx - nSpongeX));
+            const si = diRight / Math.max(1, nSpongeX);
+
+            // Only sponge strongly near top/right.
+            const s = Math.max(si, sj);
+            if (s <= 0) continue;
+
+            const sigma = 0.06 * s * s;
+            this.U0[id] = this.U0[id] * (1 - sigma) + Uinf[0] * sigma;
+            this.U1[id] = this.U1[id] * (1 - sigma) + Uinf[1] * sigma;
+            this.U2[id] = this.U2[id] * (1 - sigma) + Uinf[2] * sigma;
+            this.U3[id] = this.U3[id] * (1 - sigma) + Uinf[3] * sigma;
+          }
+        }
+
+        this.time += dt;
+      }
+
+      samplePrim(px, py) {
+        const fx = (px - this.xMin) / this.dx - 0.5;
+        const fy = (py - this.yMin) / this.dy - 0.5;
+        const i0 = Math.floor(fx);
+        const j0 = Math.floor(fy);
+        const tx = fx - i0;
+        const ty = fy - j0;
+
+        function safeCell(self, ii, jj) {
+          ii = clamp(ii, 0, self.nx-1);
+          jj = clamp(jj, 0, self.ny-1);
+          const id = self.idx(ii, jj);
+          if (self.solid[id]) return { rho: self.inflow.rho, u: self.inflow.u, v: self.inflow.v, p: self.inflow.p, a: 1 };
+          return consToPrim(self.U0[id], self.U1[id], self.U2[id], self.U3[id], self.g);
+        }
+
+        const P00 = safeCell(this, i0, j0);
+        const P10 = safeCell(this, i0+1, j0);
+        const P01 = safeCell(this, i0, j0+1);
+        const P11 = safeCell(this, i0+1, j0+1);
+
+        function lerp(a, b, t) { return a + (b-a)*t; }
+        const rho0 = lerp(P00.rho, P10.rho, tx);
+        const rho1 = lerp(P01.rho, P11.rho, tx);
+        const u0 = lerp(P00.u, P10.u, tx);
+        const u1 = lerp(P01.u, P11.u, tx);
+        const v0 = lerp(P00.v, P10.v, tx);
+        const v1 = lerp(P01.v, P11.v, tx);
+        const p0 = lerp(P00.p, P10.p, tx);
+        const p1 = lerp(P01.p, P11.p, tx);
+
+        const rho = lerp(rho0, rho1, ty);
+        const u = lerp(u0, u1, ty);
+        const v = lerp(v0, v1, ty);
+        const p = lerp(p0, p1, ty);
+        const a = Math.sqrt(this.g * Math.max(1e-8, p) / Math.max(1e-8, rho));
+        return { rho, u, v, p, a };
+      }
+    }
+
+    // ---------- Rendering helpers ----------
+    function resizeCanvasToCSS() {
+      const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(320, Math.floor(rect.width));
+      const h = Math.max(220, Math.floor(rect.width * 9/16));
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { W: w, H: h };
+    }
+
+    function drawArrow(x1, y1, x2, y2, color, width=2) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      const ang = Math.atan2(y2-y1, x2-x1);
+      const ah = 10;
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - ah*Math.cos(ang - Math.PI/7), y2 - ah*Math.sin(ang - Math.PI/7));
+      ctx.lineTo(x2 - ah*Math.cos(ang + Math.PI/7), y2 - ah*Math.sin(ang + Math.PI/7));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawLegend(W, H, labelLeft="low", labelRight="high") {
+      const x0 = W - 230, y0 = 16, w = 200, h = 25;
+      ctx.save();
+      ctx.globalAlpha = 0.75; // toned down for black background
+      for (let i = 0; i < w; i++) {
+        const t = i / (w - 1);
+        ctx.fillStyle = heatColor(t);
+        ctx.fillRect(x0 + i, y0, 1, h);
+      }
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.strokeRect(x0, y0, w, h);
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+      ctx.fillText(labelLeft, x0, y0 + h + 14);
+      ctx.fillText(labelRight, x0 + w - 42, y0 + h + 14);
+      ctx.restore();
+    }
+
+    function drawColorbarLeft(W, H, title, minVal, maxVal) {
+      const x0 = 18;
+      const y0 = 18;
+      const w = 18;
+      const h = Math.max(180, Math.floor(H * 0.42)) - 10;
+      ctx.save();
+      ctx.globalAlpha = 0.95;
+
+      for (let j = 0; j < h; j++) {
+        const t = 1 - (j / (h - 1));
+        ctx.fillStyle = heatColor(t);
+        ctx.fillRect(x0, y0 + j, w, 1);
+      }
+      ctx.strokeStyle = "rgba(255,255,255,0.35)";
+      ctx.strokeRect(x0, y0, w, h);
+
+      if (title) {
+        ctx.fillStyle = "rgba(255,255,255,0.92)";
+        ctx.font = "12px system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif";
+        ctx.fillText(title, x0 + w + 10, y0 - 2);
+      }
+
+      const ticks = 8;
+      ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+      ctx.fillStyle = "rgba(255,255,255,0.86)";
+      ctx.strokeStyle = "rgba(255,255,255,0.45)";
+      for (let t = 0; t <= ticks; t++) {
+        const u = t / ticks;
+        const yy = y0 + (1 - u) * h;
+        const val = minVal + u * (maxVal - minVal);
+        ctx.beginPath();
+        ctx.moveTo(x0 + w, yy);
+        ctx.lineTo(x0 + w + 6, yy);
+        ctx.stroke();
+        ctx.fillText(val.toExponential(2), x0 + w + 10, yy + 4);
+      }
+
+      ctx.restore();
+    }
+
+    function drawSolids(W, H, ox, oy, scale, ductOn) {
+      // Solid black shapes like the CFD reference image.
+      ctx.save();
+      ctx.fillStyle = "#000";
+
+      // Lower body: fill everything below the lower wall down to the bottom of the canvas
+      // so there is no visible flow under the ramp/inlet.
+      const pxLeft = (0 - ox) / scale;
+      const pxRight = (W - ox) / scale;
+
+      const wallPts = [];
+      wallPts.push({ x: pxLeft, y: lowerWallY(pxLeft) });
+      if (pxLeft < GEOM.xKink && GEOM.xKink < pxRight) wallPts.push({ x: GEOM.xKink, y: lowerWallY(GEOM.xKink) });
+      if (pxLeft < 0 && 0 < pxRight) wallPts.push({ x: 0, y: lowerWallY(0) });
+      if (pxLeft < GEOM.xEnd && GEOM.xEnd < pxRight) wallPts.push({ x: GEOM.xEnd, y: lowerWallY(GEOM.xEnd) });
+      wallPts.push({ x: pxRight, y: lowerWallY(pxRight) });
+
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      ctx.lineTo(ox + wallPts[0].x * scale, oy - wallPts[0].y * scale);
+      for (let k = 1; k < wallPts.length; k++) {
+        ctx.lineTo(ox + wallPts[k].x * scale, oy - wallPts[k].y * scale);
+      }
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      ctx.fill();
+
+      // Upper cowl block: thick solid above the duct ceiling, with a 30° leading wedge face.
+      if (ductOn) {
+        const yCeil = GEOM.ductH;
+        const yOuter = GEOM.ductH + GEOM.cowlT;
+
+        // Align the sharp duct point with the start of the flat ramp-top section at x=0.
+        // Use the 30° top face to grow cowl thickness downstream over GEOM.cowlLead.
+        const pxRight = (W - ox) / scale;
+        const xRight = Math.max(GEOM.xEnd, pxRight + 6.0);
+
+        const xNose = 0.0;
+        const xFull = GEOM.cowlLead;
+        ctx.beginPath();
+        ctx.moveTo(ox + xNose * scale, oy - yCeil * scale);           // sharp nose point (aligned)
+        ctx.lineTo(ox + xFull * scale, oy - yOuter * scale);          // 30° top face (downstream)
+        ctx.lineTo(ox + xRight * scale, oy - yOuter * scale);         // extend off-screen right
+        ctx.lineTo(ox + xRight * scale, oy - yCeil * scale);          // back down to ceiling
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // ---------- Noise (procedural “numerical texture”) ----------
+    function hash2(i, j) {
+      let x = i * 374761393 + j * 668265263;
+      x = (x ^ (x >> 13)) * 1274126177;
+      x = (x ^ (x >> 16)) >>> 0;
+      return x / 4294967296;
+    }
+    function valueNoise(x, y) {
+      const ix = Math.floor(x), iy = Math.floor(y);
+      const fx = x - ix, fy = y - iy;
+      const a = hash2(ix, iy);
+      const b = hash2(ix+1, iy);
+      const c = hash2(ix, iy+1);
+      const d = hash2(ix+1, iy+1);
+      const ux = smoothstep(fx);
+      const uy = smoothstep(fy);
+      const ab = a + ux*(b-a);
+      const cd = c + ux*(d-c);
+      return ab + uy*(cd-ab);
+    }
+
+    // ---------- Percentile helper ----------
+    function percentile(arr, p) {
+      const js = Array.from(arr);
+      js.sort((a,b)=>a-b);
+      const idx = clamp(Math.floor(p * (js.length - 1)), 0, js.length-1);
+      return js[idx];
+    }
+
+    // ---------- Global scale ----------
+    let currentScale = 1;
+
+    // ---------- Euler solver state ----------
+    let euler = null;
+    let eulerNeedsReset = true;
+    let eulerKey = "";
+    let animRunning = false;
+    let rafId = 0;
+
+    function makeInflow(M1, theta, g) {
+      // nondimensional: choose a=1 by setting p = 1/g, rho=1
+      const rho = 1.0;
+      const p = 1.0 / Math.max(1e-9, g);
+      const a = Math.sqrt(g * p / rho);
+      const U = M1 * a;
+      const u = U * Math.cos(theta);
+      const v = U * Math.sin(theta);
+      return { rho, u, v, p };
+    }
+
+    function ensureEuler(nx, ny, xMin, xMax, yMin, yMax, g, ductOn, inflow) {
+      const key = [nx, ny, xMin.toFixed(4), xMax.toFixed(4), yMin.toFixed(4), yMax.toFixed(4), g.toFixed(6), ductOn ? 1 : 0,
+        inflow.rho.toFixed(6), inflow.u.toFixed(6), inflow.v.toFixed(6), inflow.p.toFixed(6)].join("|");
+      if (!euler || eulerKey !== key || eulerNeedsReset) {
+        euler = new Euler2D(nx, ny, xMin, xMax, yMin, yMax, g, ductOn, inflow);
+        eulerKey = key;
+        eulerNeedsReset = false;
+      }
+    }
+
+    function drawTurnAngleGuide(W, H, ox, oy, theta) {
+      const L = Math.min(W, H) * 0.55;
+      const dx = Math.cos(theta);
+      const dy = -Math.sin(theta);
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,90,90,0.75)";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(ox + dx * L, oy + dy * L);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawOverlays(W, H, ox, oy, theta, beta, ductOn, Hduct, rays) {
+      const L = Math.min(W, H) * 0.95;
+
+      // Origin
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      ctx.beginPath();
+      ctx.arc(ox, oy, 3, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+
+      // Freestream axis
+      drawArrow(ox, oy, ox + L*0.9, oy, "rgba(180,220,255,0.85)", 2);
+
+      // Turn-angle indicator (use the exact same guide as Density view)
+      drawTurnAngleGuide(W, H, ox, oy, theta);
+
+      // Upper wall
+      if (ductOn) {
+        const upperY = oy - (Hduct * currentScale);
+        const pxRight = (W - ox) / currentScale;
+        const xRight = Math.max(GEOM.xEnd, pxRight + 6.0);
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,0.65)";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        // Match the actual duct ceiling: starts at the sharp nose (x=0) and extends off-screen right.
+        ctx.moveTo(ox + 0.0 * currentScale, upperY);
+        ctx.lineTo(ox + xRight * currentScale, upperY);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Primary shock line
+      if (beta !== null) {
+        const sdx = Math.cos(beta), sdy = -Math.sin(beta);
+        drawArrow(ox, oy, ox + sdx*L, oy + sdy*L, "rgba(255,120,120,0.95)", 2.6);
+      }
+
+      // Reflections
+      if (ductOn && rays && rays.length) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,170,170,0.75)";
+        ctx.lineWidth = 2;
+        for (const seg of rays) {
+          const x1 = ox + seg.p0x * currentScale;
+          const y1 = oy - seg.p0y * currentScale;
+          const x2 = ox + seg.p1x * currentScale;
+          const y2 = oy - seg.p1y * currentScale;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    // ---------- Main draw ----------
+    function draw() {
+      const { W, H } = resizeCanvasToCSS();
+
+      const M1 = parseFloat(machEl.value);
+      const thetaDeg = parseFloat(thetaEl.value);
+      const theta = deg2rad(thetaDeg);
+      const g = parseFloat(gammaEl.value);
+      const view = viewEl.value;
+      const ductOn = ductEl.checked;
+      const ductH = clamp(parseFloat(ductHEl.value), 12, 32);
+
+      updateControlEnablement(view);
+
+      const schMode = schModeEl.value;
+      const schGain = parseFloat(schGainEl.value);
+      const texAmt = parseFloat(texEl.value);
+      const streamlinesOn = streamEl.checked;
+      const fixedRange = fixedRangeEl.checked;
+
+      machVal.textContent = M1.toFixed(2);
+      thetaVal.textContent = thetaDeg.toFixed(1);
+      ductHVal.textContent = ductH.toFixed(1);
+      schGainVal.textContent = schGain.toFixed(0);
+      texVal.textContent = texAmt.toFixed(0);
+
+      // Layout / scale (map sketch geometry into the canvas)
+      // Drive the geometry from the UI slider.
+      // Note: many geometry helpers (solids, cowl, wall normals) reference GEOM.ductH.
+      if (Math.abs(GEOM.ductH - ductH) > 1e-6) {
+        GEOM.ductH = ductH;
+        eulerNeedsReset = true;
+      }
+      const Hduct = GEOM.ductH;
+      const xMin = GEOM.xUp;
+      const xMax = GEOM.xEnd;
+      const xRange = (xMax - xMin);
+      const padX = 0.40 * xRange;
+      const padDown = 0.00 * Hduct;
+      const padUp = 0.95 * Hduct;
+      const yMin = Math.min(lowerWallY(GEOM.xUp), lowerWallY(GEOM.xKink), 0) - padDown;
+      const yMax = (GEOM.ductH + GEOM.cowlT) + padUp;
+      const margin = Math.max(16, Math.floor(Math.min(W, H) * 0.04));
+      const scale = Math.min(
+        (W - 2 * margin) / Math.max(1e-9, (xMax - xMin + 2*padX)),
+        (H - 2 * margin) / Math.max(1e-9, (yMax - yMin))
+      );
+      currentScale = scale;
+      const ox = margin - (xMin - padX) * scale;
+      const oy = (H - margin) + yMin * scale;
+
+      // Black background everywhere
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, W, H);
+
+      // --- Euler simulation domain (match view extents) ---
+      const xMinSim = xMin - padX;
+      const xMaxSim = xMax + padX + 0.85 * xRange;
+      const yMinSim = yMin;
+      const yMaxSim = yMax + 1.25 * Hduct;
+
+      const inflow = makeInflow(M1, theta, g);
+      // coarse grid, progressive
+      ensureEuler(180, 90, xMinSim, xMaxSim, yMinSim, yMaxSim, g, ductOn, inflow);
+      const stepsPerFrame = 10;
+      for (let s = 0; s < stepsPerFrame; s++) euler.step(0.45);
+
+      // Euler sim: skip analytic shock painting/overlays; render directly from solution.
+
+      let vMin, vMax, legend;
+      if (view === "pressure") {
+        vMin = 0.6; vMax = 3.0;
+        legend = `Field: p/p₁`;
+      } else if (view === "density") {
+        vMin = 0.395; vMax = 7.62;
+        legend = `Field: ρ/ρ₁`;
+      } else if (view === "mach") {
+        vMin = 1.0; vMax = 6.0;
+        legend = `Field: Mach`;
+      } else {
+        // schlieren is contrast-normalized
+        vMin = 0.0; vMax = 1.0;
+        legend = `View: Schlieren`;
+      }
+
+      const raysAll = [];
+
+      // Grid
+      const cell = Math.max(3, Math.floor(Math.min(W, H) / 155));
+      const nx = Math.ceil(W / cell);
+      const ny = Math.ceil(H / cell);
+
+      const V = new Float32Array(nx * ny);
+      const Mask = new Uint8Array(nx * ny); // kept for minimal churn; we set it to 1 everywhere (NO masking)
+
+      // Variable shock thickness
+      const baseThick = 0.020;
+      const shockThickness = baseThick * (1.0 / Math.sqrt(Math.max(1.0, M1)));
+      const ghostThickness = shockThickness * 1.45;
+
+      // Boundary-layer proxy thickness
+      const bl0 = 0.018;
+      const bl = bl0 * (1.0 + 0.12 * Math.max(0, thetaDeg));
+
+      function scalarAt(px, py) {
+        const P = euler.samplePrim(px, py);
+        if (view === "density") return P.rho;
+        if (view === "pressure") return P.p / inflow.p;
+        if (view === "mach") {
+          const Vmag = Math.hypot(P.u, P.v);
+          return Vmag / Math.max(1e-9, P.a);
+        }
+        // schlieren uses density as base scalar
+        return P.rho;
+      }
+
+      // Fill V + Mask
+      for (let j = 0; j < ny; j++) {
+        for (let i = 0; i < nx; i++) {
+          const x = i * cell + cell * 0.5;
+          const y = j * cell + cell * 0.5;
+          const px = (x - ox) / scale;
+          const py = -(y - oy) / scale;
+
+          Mask[j*nx + i] = 1;
+          V[j*nx + i] = scalarAt(px, py);
+        }
+      }
+
+      // Render
+      if (view === "schlieren") {
+        const G = new Float32Array(nx * ny);
+
+        // Compute directional gradient (no masking)
+        for (let j = 1; j < ny-1; j++) {
+          for (let i = 1; i < nx-1; i++) {
+            const idx = j*nx + i;
+
+            const vx1 = V[idx + 1];
+            const vx0 = V[idx - 1];
+            const vy1 = V[idx + nx];
+            const vy0 = V[idx - nx];
+
+            const gx = (vx1 - vx0) * 0.5;
+            const gy = (vy1 - vy0) * 0.5;
+
+            let gm;
+            if (schMode === "dx") gm = Math.abs(gx);
+            else if (schMode === "dy") gm = Math.abs(gy);
+            else gm = Math.hypot(gx, gy);
+
+            G[idx] = gm;
+          }
+        }
+
+        // Percentiles on the full field
+        const allVals = [];
+        for (let k = 0; k < G.length; k++) allVals.push(G[k]);
+        const lo = percentile(allVals, 0.01);
+        const hi = percentile(allVals, 0.995);
+        const denom = Math.max(1e-10, hi - lo);
+
+        const kGain = schGain;
+        const texA = (texAmt / 25) * 0.08;
+
+        const B = new Float32Array(nx * ny);
+        for (let j = 0; j < ny; j++) {
+          for (let i = 0; i < nx; i++) {
+            const idx = j*nx + i;
+
+            let v = (G[idx] - lo) / denom;
+            v = clamp(v, 0, 1);
+            v = Math.log1p(kGain * v) / Math.log1p(kGain);
+            v = Math.pow(v, 0.55);
+
+            if (texA > 0) {
+              const n = valueNoise(i*0.33, j*0.33) - 0.5;
+              v = clamp(v + texA * n * (0.25 + 0.75*v), 0, 1);
+            }
+            B[idx] = v;
+          }
+        }
+
+        // Glow (3x3-ish blur)
+        const Glow = new Float32Array(nx * ny);
+        for (let j = 1; j < ny-1; j++) {
+          for (let i = 1; i < nx-1; i++) {
+            const idx = j*nx + i;
+
+            const s =
+              1*B[idx] +
+              0.7*(B[idx-1] + B[idx+1] + B[idx-nx] + B[idx+nx]) +
+              0.45*(B[idx-nx-1] + B[idx-nx+1] + B[idx+nx-1] + B[idx+nx+1]);
+            Glow[idx] = s / (1 + 4*0.7 + 4*0.45);
+          }
+        }
+
+        // Composite to screen (full frame)
+        for (let j = 0; j < ny; j++) {
+          for (let i = 0; i < nx; i++) {
+            const idx = j*nx + i;
+
+            const base = B[idx];
+            const glow = Glow[idx];
+            const gg = clamp(glow * 1.10, 0, 1);
+
+            let v = clamp(base*0.85 + gg*0.70, 0, 1);
+
+            const r = Math.round(20 + v * 235 * 0.95);
+            const g2= Math.round(22 + v * 235 * 0.98);
+            const b = Math.round(30 + v * 235 * 1.05);
+
+            ctx.fillStyle = `rgb(${clamp(r,0,255)},${clamp(g2,0,255)},${clamp(b,0,255)})`;
+            ctx.fillRect(i*cell, j*cell, cell, cell);
+          }
+        }
+
+        // No legend for schlieren (more “real”); comment back in if you want it:
+        // drawLegend(W, H, "low", "high");
+      } else {
+        // Scalar modes: color full frame (no masking)
+        const texA = (view === "density") ? ((texAmt / 25) * 0.03) : 0;
+
+        for (let j = 0; j < ny; j++) {
+          for (let i = 0; i < nx; i++) {
+            const idx = j*nx + i;
+
+            const val = V[idx];
+            let t = (val - vMin) / (vMax - vMin);
+            t = clamp(t, 0, 1);
+            if (view !== "density") t = Math.pow(t, 0.62);
+
+            if (texA > 0) {
+              const n = valueNoise(i*0.40, j*0.40) - 0.5;
+              t = clamp(t + texA * n, 0, 1);
+            }
+
+            ctx.fillStyle = heatColor(t);
+            ctx.fillRect(i*cell, j*cell, cell, cell);
+          }
+        }
+
+        if (view === "density") drawColorbarLeft(W, H, "", vMin, vMax);
+        else drawLegend(W, H, "low", "high");
+      }
+
+      // Solid inlet/duct bodies on top (matches reference; colors still render everywhere else)
+      drawSolids(W, H, ox, oy, scale, ductOn);
+
+      // Streamlines (only inside domain for cleanliness)
+      if (streamlinesOn) {
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.strokeStyle = "rgba(255,255,255,0.92)";
+        ctx.lineWidth = 1.8;
+        ctx.shadowColor = "rgba(0,0,0,0.65)";
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        const toWorld = (sx, sy) => ({ x: (sx - ox) / scale, y: (oy - sy) / scale });
+
+        // Keep the view's color scale readable by preventing streamlines from drawing over it.
+        // - Density ratio: vertical colorbar in the top-left (avoid only the bar itself).
+        // - Pressure ratio / Mach: compact bar legend in the top-right.
+        // - Schlieren: no legend, so no forbidden region.
+        function getStreamlineForbiddenRect(view, W, H) {
+          if (view === "density") {
+            const x0 = 18;
+            const y0 = 18;
+            const w = 18;
+            const h = Math.max(180, Math.floor(H * 0.42));
+
+            // Match drawColorbarLeft(): tick mark + spacing + exponential label text.
+            // Use a fixed template width so the forbidden region doesn't “jump” between
+            // widths as layout/font metrics fluctuate.
+            ctx.save();
+            ctx.font = "11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+            const labelW = ctx.measureText("0.00e+00").width;
+            ctx.restore();
+
+            const right = x0 + w + 6 + 10 + labelW - 8; // small fudge to prevent exact edge-clipping of the "0" in the label
+            return { x: x0 - 3, y: y0 - 3, w: (right - (x0 - 3)), h: h + 6 };
+          }
+
+          if (view === "schlieren") {
+            // Schlieren doesn't draw a legend; allow streamlines everywhere.
+            return { x: 0, y: 0, w: 0, h: 0 };
+          }
+
+          // Must match drawLegend() geometry.
+          const x0 = W - 230;
+          const y0 = 16;
+          const w = 200;
+          const h = 14;
+          // Include the "low/high" labels beneath the bar with a small padding.
+          return { x: x0 - 6, y: y0 - 6, w: w + 12, h: h + 6 + 34 };
+        }
+
+        const forbid = getStreamlineForbiddenRect(view, W, H);
+        const inForbidden = (sx, sy) => (sx >= forbid.x && sx <= forbid.x + forbid.w && sy >= forbid.y && sy <= forbid.y + forbid.h);
+
+        // Integrate streamlines forward using the Euler velocity field.
+        function drawStreamlineFromSeed(sxSeed, sySeed) {
+          let P = toWorld(sxSeed, sySeed);
+          if (isSolidAt(P.x, P.y, ductOn)) return;
+
+          const eps = 1e-6;
+          const maxSteps = 900;
+          const h = 6 / Math.max(1e-6, scale); // ~6 px step in world units
+
+          let penDown = false;
+          let lastInside = inForbidden(sxSeed, sySeed);
+
+          if (!lastInside) {
+            ctx.beginPath();
+            ctx.moveTo(sxSeed, sySeed);
+            penDown = true;
+          }
+
+          for (let n = 0; n < maxSteps; n++) {
+            if (isSolidAt(P.x, P.y, ductOn)) break;
+
+            // Clamp only for sampling so paths can start at the screen edge and still follow the field.
+            const sxP = ox + P.x * scale;
+            const syP = oy - P.y * scale;
+            if (sxP < -40 || sxP > W + 40 || syP < -40 || syP > H + 40) break;
+
+            const Pc0x = clamp(P.x, xMinSim + eps, xMaxSim - eps);
+            const Pc0y = clamp(P.y, yMinSim + eps, yMaxSim - eps);
+            const V0 = euler.samplePrim(Pc0x, Pc0y);
+            const s0 = Math.hypot(V0.u, V0.v);
+            if (!isFinite(s0) || s0 < 1e-6) break;
+            const d0x = V0.u / s0;
+            const d0y = V0.v / s0;
+
+            const midx = P.x + 0.5 * h * d0x;
+            const midy = P.y + 0.5 * h * d0y;
+            if (isSolidAt(midx, midy, ductOn)) break;
+
+            const Pc1x = clamp(midx, xMinSim + eps, xMaxSim - eps);
+            const Pc1y = clamp(midy, yMinSim + eps, yMaxSim - eps);
+            const V1 = euler.samplePrim(Pc1x, Pc1y);
+            const s1 = Math.hypot(V1.u, V1.v);
+            if (!isFinite(s1) || s1 < 1e-6) break;
+            const d1x = V1.u / s1;
+            const d1y = V1.v / s1;
+
+            P.x += h * d1x;
+            P.y += h * d1y;
+
+            const sx = ox + P.x * scale;
+            const sy = oy - P.y * scale;
+
+            const inside = inForbidden(sx, sy);
+
+            // Split the polyline when entering/leaving the forbidden (colorbar) region.
+            if (inside) {
+              if (penDown) {
+                ctx.stroke();
+                penDown = false;
+              }
+            } else {
+              if (!penDown) {
+                ctx.beginPath();
+                ctx.moveTo(sx, sy);
+                penDown = true;
+              } else {
+                ctx.lineTo(sx, sy);
+              }
+            }
+
+            lastInside = inside;
+          }
+
+          if (penDown) ctx.stroke();
+        }
+
+        // Evenly spaced seeds along the full left edge of the screen.
+        // This gives an “evenly distributed” look across the whole frame.
+        const spacingPx = 18;
+        const seedCount = Math.max(14, Math.floor(H / spacingPx));
+        const sxSeed = 1;
+        for (let k = 0; k < seedCount; k++) {
+          const sySeed = 2 + (H - 4) * (k / (seedCount - 1));
+          drawStreamlineFromSeed(sxSeed, sySeed);
+        }
+
+        ctx.restore();
+      }
+
+      // Overlays last (keep off for density)
+      if (view === "density") drawTurnAngleGuide(W, H, ox, oy, theta);
+      else drawOverlays(W, H, ox, oy, theta, null, ductOn, Hduct, raysAll);
+
+      // Readout (kept hidden by CSS in your setup)
+      readout.textContent = `${legend}   (Euler2D coarse FV; t=${euler.time.toFixed(3)}; cell=${cell}px)`;
+    }
+
+    function startAnimation() {
+      if (animRunning) return;
+      animRunning = true;
+      const loop = () => {
+        draw();
+        rafId = requestAnimationFrame(loop);
+      };
+      rafId = requestAnimationFrame(loop);
+    }
+
+    // ---------- Events ----------
+    ["input", "change"].forEach(evt => {
+      const reset = () => { eulerNeedsReset = true; };
+      machEl.addEventListener(evt, reset);
+      thetaEl.addEventListener(evt, reset);
+      gammaEl.addEventListener(evt, reset);
+      ductEl.addEventListener(evt, reset);
+      ductHEl.addEventListener(evt, reset);
+
+      // view / render-only controls
+      viewEl.addEventListener(evt, () => { updateControlEnablement(viewEl.value); });
+      schModeEl.addEventListener(evt, () => {});
+      schGainEl.addEventListener(evt, () => {});
+      texEl.addEventListener(evt, () => {});
+      streamEl.addEventListener(evt, () => {});
+      fixedRangeEl.addEventListener(evt, () => {});
+    });
+    window.addEventListener("resize", () => { /* animation loop will redraw */ });
+
+    updateControlEnablement(viewEl.value);
+    startAnimation();
+  })();
+  </script>
+</body>
+</html>

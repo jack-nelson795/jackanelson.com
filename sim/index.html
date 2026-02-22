@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Inlet Shock Visualizer — Jack Nelson</title>
+  <meta name="description" content="Interactive inlet shock visualizer: oblique shocks, expansion fans, and schlieren-style visualization." />
+  <link rel="stylesheet" href="../styles.css?v=20260221" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div id="particles-js" aria-hidden="true"></div>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html">← Back to Home</a>
+      </div>
+
+      <h1 class="page-title">Interactive Inlet Shock Visualizer</h1>
+      <p class="page-sub">Interactive oblique-shock / expansion visualization with a schlieren-style view. Use the presets to jump to a compelling state.</p>
+
+      <section class="panel" aria-label="Interactive simulation">
+        <div class="sim-toolbar" role="group" aria-label="Try presets">
+          <div class="sim-presets">
+            <button class="btn ghost sim-preset" type="button" data-sim-src="../sim.html?embed=1&M=5.5&theta=16&view=schlieren&gain=38&tex=12&duct=1">Strong shock</button>
+            <button class="btn ghost sim-preset" type="button" data-sim-src="../sim.html?embed=1&M=3.0&theta=8&view=schlieren&gain=26&tex=10&duct=1">Weak shock</button>
+            <button class="btn ghost sim-preset" type="button" data-sim-src="../sim.html?embed=1&M=4.0&theta=-8&view=schlieren&gain=30&tex=12&duct=1">Expansion</button>
+          </div>
+
+          <a class="btn primary" href="../sim.html" target="_blank" rel="noopener" aria-label="Open sim as a standalone page (opens in new tab)">Open standalone</a>
+        </div>
+
+        <div class="sim-frame sim-frame-full">
+          <iframe
+            data-sim-embed
+            title="Interactive inlet shock visualizer"
+            aria-label="Interactive inlet shock visualizer"
+            src="../sim.html?embed=1&M=5.5&theta=16&view=schlieren&gain=38&tex=12&duct=1"
+            scrolling="no"
+            loading="lazy"
+            referrerpolicy="no-referrer">
+          </iframe>
+        </div>
+
+        <div class="sim-caption" aria-label="About this project">
+          <h3>About this project</h3>
+          <p>
+            This is a browser-based, interactive inlet/duct flow visualization driven by a coarse 2D compressible Euler solver.
+            You control the freestream Mach number <code>M₁</code> and the inlet turn angle <code>θ</code>, then watch how compression waves and
+            shocks form and interact with a simplified inlet/duct/cowl geometry.
+          </p>
+
+          <p>
+            The scalar views (<code>ρ/ρ₁</code>, <code>p/p₁</code>, and <code>M</code>) come from sampling the simulated flow field.
+            The Schlieren view is a “CFD-style” visualization computed from the density gradient (a stand-in for optical schlieren photography):
+            sharp gradients show up as bright features.
+          </p>
+
+          <p><strong>What it shows</strong></p>
+          <ul>
+            <li><code>Ramp turning</code>: a turn angle imposes a change in flow direction that produces shock structures (or weaker compressions) downstream.</li>
+            <li><code>Wall interaction</code>: the ramp/duct/cowl are treated as solid reflective boundaries, so waves reflect and reshape as they propagate.</li>
+            <li><code>Inlet capture vs spillage (qualitative)</code>: depending on <code>M₁</code> and <code>θ</code>, some features convect into the duct while others run outside.</li>
+            <li><code>Unsteady settling</code>: the solver advances continuously; the field “spins up” from the inflow state toward a quasi-steady pattern.</li>
+          </ul>
+
+          <p><strong>What it hopes to accomplish</strong></p>
+          <ul>
+            <li>Provide an intuitive, fast way to explore how inlet turning and geometry influence shock topology and schlieren appearance.</li>
+            <li>Give a physically grounded alternative to purely analytic/painted shocks: downstream structures emerge from the PDE solver rather than being drawn as overlays.</li>
+            <li>Offer a compact, single-file demo that runs anywhere (no build step, no external dependencies) and can be iterated quickly.</li>
+          </ul>
+
+          <p><strong>What it is not</strong></p>
+          <ul>
+            <li><code>Not high-fidelity CFD</code>: this is an inviscid Euler model (no viscosity, no boundary layers, no turbulence model, no heat transfer).</li>
+            <li><code>Not a validated design tool</code>: results are qualitative; they are not calibrated to a specific experiment, mesh study, or uncertainty quantification.</li>
+            <li><code>Not a perfect boundary treatment</code>: the outer boundaries use simple conditions plus damping to reduce reflections; some artifacts can still exist.</li>
+            <li><code>Not high order</code>: the numerical method is intentionally simple/coarse for real-time speed, so shocks are thicker and small features are smeared.</li>
+            <li><code>Not 3D</code>: sidewall effects and full inlet three-dimensionality are not represented.</li>
+          </ul>
+
+          <p><strong>Controls glossary (what it changes / what to look for)</strong></p>
+          <ul>
+            <li><code>Freestream Mach, M₁</code>: Sets the inflow speed. Higher <code>M₁</code> generally makes shocks stronger and sharper (larger jumps in <code>ρ/ρ₁</code> and <code>p/p₁</code>).</li>
+            <li><code>Turn angle, θ</code>: Sets the inlet/ramp turning angle. Increasing <code>θ</code> tends to move/strengthen the main compression structure and changes how much of the wave system interacts with the duct/cowl.</li>
+            <li><code>View</code>: <code>ρ/ρ₁</code> (density ratio), <code>p/p₁</code> (pressure ratio), <code>M</code> (Mach), and <code>Schlieren</code> (density-gradient visualization).</li>
+            <li><code>γ</code>: Changes the ratio of specific heats in the model, affecting wave speeds and shock strengths for the same <code>M₁</code> and <code>θ</code>.</li>
+            <li><code>Duct (solid walls)</code>: Toggles the upper cowl/duct boundary. When enabled, waves reflect from the walls and internal patterns change.</li>
+            <li><code>Schlieren sensitivity</code>: Chooses which density-gradient component is emphasized (<code>∂/∂x</code>, <code>∂/∂y</code>, or <code>|∇|</code>).</li>
+            <li><code>Schlieren gain</code>: Contrast tuning for the Schlieren image (higher gain reveals weaker waves but can saturate bright regions).</li>
+            <li><code>Texture</code>: Adds a small procedural grain to reduce banding and mimic CFD/optical texture (used in Schlieren and Density views).</li>
+            <li><code>Streamlines</code>: Draws streamlines integrated from the simulated velocity field as a visualization aid.</li>
+            <li><code>Fixed color range</code>: Keeps the mapping range fixed for comparability across parameter changes; disable for auto-scaled contrast.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-dim">© <span id="year"></span> Jack Nelson</span>
+      <span class="footer-dim"><a class="inline-link" href="../index.html#contact">Contact</a></span>
+    </div>
+  </footer>
+
+  <script src="../particles.js-master/particles.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Jack Nelson — Engineering</title>
   <meta name="description" content="Jack Nelson — engineering portfolio. Selected work, technical visuals, and contact." />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260221" />
 </head>
 
 <body>
@@ -145,6 +145,46 @@ for autonomous agents operating in 3D environments.</p>
             </div>
           </a>
         </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Interactive Inlet Shock Visualizer">
+      <div class="container">
+        <div class="section-head">
+          <h2>Interactive Inlet Shock Visualizer</h2>
+          <p>Interactive inlet turn-angle + Mach visualization with a schlieren-style view. Use presets to jump into compelling states.</p>
+        </div>
+
+        <section class="panel" aria-label="Simulation preview">
+          <div class="sim-toolbar" role="group" aria-label="Try presets">
+            <div class="sim-presets">
+              <button class="btn ghost sim-preset" type="button" data-sim-src="sim.html?embed=1&M=5.5&theta=16&view=schlieren&gain=38&tex=12&duct=1">Strong shock</button>
+              <button class="btn ghost sim-preset" type="button" data-sim-src="sim.html?embed=1&M=3.0&theta=8&view=schlieren&gain=26&tex=10&duct=1">Weak shock</button>
+              <button class="btn ghost sim-preset" type="button" data-sim-src="sim.html?embed=1&M=4.0&theta=-8&view=schlieren&gain=30&tex=12&duct=1">Expansion</button>
+            </div>
+
+            <a class="btn primary" href="sim/" aria-label="Open full simulation">Open full sim</a>
+          </div>
+
+          <div class="sim-frame sim-frame-full">
+            <iframe
+              data-sim-embed
+              title="Interactive inlet shock visualizer preview"
+              aria-label="Interactive inlet shock visualizer preview"
+              src="sim.html?embed=1&M=5.5&theta=16&view=schlieren&gain=38&tex=12&duct=1"
+              scrolling="no"
+              loading="lazy"
+              referrerpolicy="no-referrer">
+            </iframe>
+          </div>
+
+          <div class="sim-caption" aria-label="About this project">
+            <p>
+              Browser-based inlet/duct shock visualizer driven by a real-time 2D compressible Euler solver. Adjust freestream Mach <code>M₁</code> and turn angle <code>θ</code> to see shocks/expansions interact with a simplified inlet geometry in density/pressure/Mach and schlieren-style views.
+              Open the full sim for the complete project notes and controls glossary.
+            </p>
+          </div>
+        </section>
       </div>
     </section>
 
