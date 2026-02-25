@@ -320,6 +320,12 @@ a:hover{ text-decoration: none; }
   backdrop-filter: blur(var(--frost-ui-blur)) saturate(var(--frost-ui-sat));
 }
 
+/* Nozzle landing panel: make it taller for more vertical space */
+.panel.panel-nozzle {
+  height: auto;
+  min-height: 0;
+}
+
 .pill.muted{ color: rgba(255,255,255,.65); }
 
 .media-tile{
@@ -502,18 +508,30 @@ a:hover{ text-decoration: none; }
   aspect-ratio: 16 / 9;
 }
 
+/* Nozzle landing preview: shorten the frame a bit (same approach as /nozzle/). */
+.sim-frame.sim-frame-preview.sim-frame-preview-nozzle{
+  aspect-ratio: auto;
+  min-height: 920px;
+  height: min(920px, calc(100vh - 80px));
+}
+
 @supports not (aspect-ratio: 16 / 9){
   .sim-frame.sim-frame-preview{ position: relative; }
   .sim-frame.sim-frame-preview::before{ content:""; display:block; padding-top: 56.25%; }
   .sim-frame.sim-frame-preview iframe{ position:absolute; inset:0; }
+
+  /* Nozzle override uses fixed height; disable the padding-top shim. */
+  .sim-frame.sim-frame-preview.sim-frame-preview-nozzle::before{ content:none; display:none; padding-top:0; }
+  .sim-frame.sim-frame-preview.sim-frame-preview-nozzle iframe{ position:absolute; inset:0; }
 }
 
 /* Full page: taller, avoids iframe scrollbars in most viewports */
-.sim-frame.sim-frame-full{
-  aspect-ratio: auto;
-  height: min(1040px, calc(100vh - 220px));
-  min-height: 980px;
-}
+ .sim-frame.sim-frame-full {
+   aspect-ratio: auto;
+   height: min(1040px, calc(100vh - 220px));
+   min-height: 980px;
+   max-height: 100%;
+ }
 
 .sim-caption{
   width: min(1100px, 100%);

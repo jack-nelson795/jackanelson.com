@@ -155,7 +155,7 @@ for autonomous agents operating in 3D environments.</p>
           <p>Interactive inlet turn-angle + Mach visualization with a schlieren-style view. Use presets to jump into compelling states.</p>
         </div>
 
-        <section class="panel" aria-label="Simulation preview">
+        <section class="panel panel-nozzle" aria-label="Simulation preview">
           <div class="sim-toolbar" role="group" aria-label="Try presets">
             <div class="sim-presets">
               <button class="btn ghost sim-preset" type="button" data-sim-src="sim.html?embed=1&M=5.5&theta=16&view=schlieren&gain=38&tex=12&duct=1">Strong shock</button>
@@ -182,6 +182,46 @@ for autonomous agents operating in 3D environments.</p>
             <p>
               Browser-based inlet/duct shock visualizer driven by a real-time 2D compressible Euler solver. Adjust freestream Mach <code>M₁</code> and turn angle <code>θ</code> to see shocks/expansions interact with a simplified inlet geometry in density/pressure/Mach and schlieren-style views.
               Open the full sim for the complete project notes and controls glossary.
+            </p>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Interactive Rocket Nozzle + Plume Visualizer">
+      <div class="container">
+        <div class="section-head">
+          <h2>Interactive Rocket Nozzle + Plume Visualizer</h2>
+          <p>Axisymmetric nozzle + plume simulation with shock-cell structure (“shock diamonds”) emerging from a real-time compressible Euler solution. Use presets to jump into compelling states.</p>
+        </div>
+
+        <section class="panel" aria-label="Simulation preview">
+          <div class="sim-toolbar" role="group" aria-label="Try presets">
+            <div class="sim-presets">
+              <button class="btn ghost sim-preset" type="button" data-sim-src="nozzle.html?embed=1&run=1&p0=65&T0=1.2&pa=1&gamma=1.4&AeAt=6.5&L=1&shape=bell&div=12&view=schlieren&schMode=dx&schGain=58&tex=9&stream=0&fixed=0">Sea-level diamonds</button>
+              <button class="btn ghost sim-preset" type="button" data-sim-src="nozzle.html?embed=1&run=1&p0=18&T0=1.15&pa=1&gamma=1.4&AeAt=8&L=1&shape=bell&div=12&view=mach&schMode=dx&schGain=28&tex=7&stream=0&fixed=0">Near-ideal</button>
+              <button class="btn ghost sim-preset" type="button" data-sim-src="nozzle.html?embed=1&run=1&p0=35&T0=1.2&pa=0.18&gamma=1.4&AeAt=12&L=1.05&shape=bell&div=10&view=schlieren&schMode=mag&schGain=32&tex=9&stream=0&fixed=0">High-altitude</button>
+            </div>
+
+            <a class="btn primary" href="nozzle/" aria-label="Open full nozzle simulation">Open full sim</a>
+          </div>
+
+          <div class="sim-frame sim-frame-preview sim-frame-preview-nozzle">
+            <iframe
+              data-sim-embed
+              title="Interactive rocket nozzle + plume visualizer preview"
+              aria-label="Interactive rocket nozzle + plume visualizer preview"
+              src="nozzle.html?embed=1&run=1&p0=65&T0=1.2&pa=1&gamma=1.4&AeAt=6.5&L=1&shape=bell&div=12&view=schlieren&schMode=dx&schGain=58&tex=9&stream=0&fixed=0"
+              scrolling="no"
+              loading="lazy"
+              referrerpolicy="no-referrer">
+            </iframe>
+          </div>
+
+          <div class="sim-caption" aria-label="About this project">
+            <p>
+              Browser-based axisymmetric rocket nozzle + plume visualizer driven by a real-time compressible Euler solver. The “shock diamonds” visible in Schlieren mode arise from the computed flow field (inviscid; no viscosity/turbulence/mixing model).
+              Open the full sim for the complete notes and controls glossary.
             </p>
           </div>
         </section>

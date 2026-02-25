@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Rocket Nozzle + Plume Visualizer — Jack Nelson</title>
+  <meta name="description" content="Interactive axisymmetric rocket nozzle + plume visualizer with Schlieren-style view and shock-cell structure from a real-time Euler solver." />
+  <link rel="stylesheet" href="../styles.css?v=20260221" />
+  <style>
+    /* Nozzle wrapper: slightly shorter full-frame to reduce empty space below the embedded sim. */
+    .sim-frame.sim-frame-full{
+      height: min(920px, calc(100vh - 240px));
+      min-height: 920px;
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div id="particles-js" aria-hidden="true"></div>
+  <div class="bg-ambient" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true">JN</span>
+        <span class="brand-text">Jack Nelson</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="../index.html#work">Work</a>
+        <a href="../index.html#visuals">Visualizations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+    <div class="container">
+      <div class="page-head">
+        <a class="back" href="../index.html">← Back to Home</a>
+      </div>
+
+      <h1 class="page-title">Interactive Rocket Nozzle + Plume Visualizer</h1>
+      <p class="page-sub">Axisymmetric nozzle + plume simulation with shock-cell structure (“shock diamonds”) emerging from a real-time compressible Euler solution. Use presets to jump into a compelling state.</p>
+
+      <section class="panel" aria-label="Interactive simulation">
+        <div class="sim-toolbar" role="group" aria-label="Try presets">
+          <div class="sim-presets">
+            <button class="btn ghost sim-preset" type="button" data-sim-src="../nozzle.html?embed=1&run=1&p0=65&T0=1.2&pa=1&gamma=1.4&AeAt=6.5&L=1&shape=bell&div=12&view=schlieren&schMode=dx&schGain=58&tex=9&stream=0&fixed=0">Sea-level diamonds</button>
+            <button class="btn ghost sim-preset" type="button" data-sim-src="../nozzle.html?embed=1&run=1&p0=18&T0=1.15&pa=1&gamma=1.4&AeAt=8&L=1&shape=bell&div=12&view=mach&schMode=dx&schGain=28&tex=7&stream=0&fixed=0">Near-ideal</button>
+            <button class="btn ghost sim-preset" type="button" data-sim-src="../nozzle.html?embed=1&run=1&p0=35&T0=1.2&pa=0.18&gamma=1.4&AeAt=12&L=1.05&shape=bell&div=10&view=schlieren&schMode=mag&schGain=32&tex=9&stream=0&fixed=0">High-altitude</button>
+          </div>
+
+          <a class="btn primary" href="../nozzle.html" target="_blank" rel="noopener" aria-label="Open sim as a standalone page (opens in new tab)">Open standalone</a>
+        </div>
+
+        <div class="sim-frame sim-frame-full">
+          <iframe
+            data-sim-embed
+            title="Interactive rocket nozzle + plume visualizer"
+            aria-label="Interactive rocket nozzle + plume visualizer"
+            src="../nozzle.html?embed=1&run=1&p0=65&T0=1.2&pa=1&gamma=1.4&AeAt=6.5&L=1&shape=bell&div=12&view=schlieren&schMode=dx&schGain=58&tex=9&stream=0&fixed=0"
+            scrolling="no"
+            loading="lazy"
+            referrerpolicy="no-referrer">
+          </iframe>
+        </div>
+
+        <div class="sim-caption" aria-label="About this project">
+          <h3>About this project</h3>
+          <p>
+            This is a browser-based, interactive rocket nozzle + plume visualization driven by a coarse axisymmetric compressible Euler solver.
+            You control chamber total pressure <span class="mono">P₀</span>, temperature <span class="mono">T₀</span>, ambient pressure <span class="mono">Pₐ</span>, nozzle area ratio <span class="mono">Aₑ/Aₜ</span>, and other parameters, then watch how expansion waves, shocks, and shock-cell (“diamond”) structures form and interact with the nozzle and plume.
+          </p>
+
+          <p>
+            The scalar views (<span class="mono">ρ</span>, <span class="mono">p</span>, <span class="mono">M</span>) come from sampling the simulated flow field. The Schlieren view is a “CFD-style” visualization computed from the density gradient (a stand-in for optical schlieren photography): sharp gradients show up as bright features, revealing shock waves, expansion fans, and the characteristic diamond pattern in the exhaust.
+          </p>
+
+          <p><strong>What it shows</strong></p>
+          <ul>
+            <li><span class="mono">Shock-cell formation</span>: underexpanded exhaust forms periodic shock/expansion structures (“diamonds”) as the plume adjusts to ambient pressure.</li>
+            <li><span class="mono">Nozzle geometry effects</span>: changing area ratio, length, and shape alters plume expansion, shock spacing, and exhaust structure.</li>
+            <li><span class="mono">Ambient pressure influence</span>: lowering <span class="mono">Pₐ</span> (simulating altitude) changes plume width, shock intensity, and expansion fan behavior.</li>
+            <li><span class="mono">Unsteady settling</span>: the solver advances continuously; the field “spins up” from chamber conditions toward a quasi-steady plume pattern.</li>
+          </ul>
+
+          <p><strong>What it hopes to accomplish</strong></p>
+          <ul>
+            <li>Provide an intuitive, fast way to explore how nozzle design and chamber/ambient conditions influence plume structure and shock-cell appearance.</li>
+            <li>Give a physically grounded alternative to analytic/painted shock diamonds: structures emerge from the PDE solver rather than being drawn as overlays.</li>
+            <li>Offer a compact, single-file demo that runs anywhere (no build step, no external dependencies) and can be iterated quickly.</li>
+          </ul>
+
+          <p><strong>What it is not</strong></p>
+          <ul>
+            <li><span class="mono">Not high-fidelity CFD</span>: this is an inviscid Euler model (no viscosity, no turbulence model, no heat transfer, no mixing).</li>
+            <li><span class="mono">Not a validated design tool</span>: results are qualitative; they are not calibrated to a specific experiment, mesh study, or uncertainty quantification.</li>
+            <li><span class="mono">Not a perfect boundary treatment</span>: boundaries use simple conditions plus damping to reduce reflections; some artifacts can still exist.</li>
+            <li><span class="mono">Not high order</span>: the numerical method is intentionally simple/coarse for real-time speed, so shocks are thicker and small features are smeared.</li>
+            <li><span class="mono">Not 3D</span>: full three-dimensional plume effects and sidewall interactions are not represented.</li>
+          </ul>
+
+          <p><strong>Controls glossary (what it changes / what to look for)</strong></p>
+          <ul>
+            <li><span class="mono">Chamber total pressure, P₀</span>: Sets the initial pressure in the combustion chamber. Higher <span class="mono">P₀</span> increases exhaust velocity and shock intensity.</li>
+            <li><span class="mono">Chamber total temperature, T₀</span>: Sets the initial temperature. Higher <span class="mono">T₀</span> increases exhaust energy and plume expansion.</li>
+            <li><span class="mono">Ambient pressure, Pₐ</span>: Simulates altitude. Lower <span class="mono">Pₐ</span> (higher altitude) widens the plume and changes shock-cell spacing.</li>
+            <li><span class="mono">γ (specific heats)</span>: Changes the ratio of specific heats. This affects wave speeds and shock strengths for the same chamber/ambient conditions.</li>
+            <li><span class="mono">Nozzle area ratio, Aₑ/Aₜ</span>: Sets the exit-to-throat area ratio. Larger ratios produce higher expansion and more pronounced plume structure.</li>
+            <li><span class="mono">Nozzle length, L</span>: Adjusts the physical length of the nozzle, affecting plume shape and shock pattern.</li>
+            <li><span class="mono">Nozzle shape</span>: Switches between bell and conical nozzle profiles, changing expansion fan geometry and plume appearance.</li>
+            <li><span class="mono">View</span>:
+              <span class="mono">ρ</span> shows density (good for “CFD contour” look),
+              <span class="mono">p</span> shows pressure (often highlights shocks clearly),
+              <span class="mono">M</span> shows local Mach number,
+              <span class="mono">Schlieren</span> shows a contrast-enhanced density-gradient image (good for wave visualization).
+            </li>
+            <li><span class="mono">Schlieren sensitivity</span> (only in Schlieren view): Chooses which density-gradient component is emphasized:
+              <span class="mono">∂/∂x</span> highlights features with strong streamwise gradients,
+              <span class="mono">∂/∂y</span> highlights vertical gradients,
+              <span class="mono">|∇|</span> highlights overall gradient magnitude.
+            </li>
+            <li><span class="mono">Schlieren gain</span> (only in Schlieren view): Contrast/compression tuning for the Schlieren image. Higher gain makes weak waves more visible but can also saturate bright regions.</li>
+            <li><span class="mono">Texture</span> (only in Schlieren + Density): Adds a small procedural “numerical texture” to reduce banding and mimic CFD/optical grain. Set to 0 for the cleanest contours.</li>
+            <li><span class="mono">Streamlines</span>: Draws approximate streamlines over the field. This is a visualization aid (not a separate solver); it can help show plume expansion and shock-cell structure qualitatively.</li>
+            <li><span class="mono">Fixed color range</span>: When enabled, uses a fixed mapping range so colors are comparable across parameter changes; when disabled, the range auto-scales to the current frame (more contrast, less comparability).</li>
+          </ul>
+          <p class="mono" style="opacity:.9;">
+            Disclaimer: Axisymmetric inviscid Euler: captures shock structure; does not model viscosity/turbulence/mixing; shock diamonds are physical from inviscid compressible flow, but plume spreading/mixing is not.
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-dim">© <span id="year"></span> Jack Nelson</div>
+      <div class="footer-dim">Built with static HTML/CSS/JS.</div>
+    </div>
+  </footer>
+
+  <script src="../particles.js-master/particles.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
